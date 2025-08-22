@@ -1598,15 +1598,10 @@ a {
 .cid-uUfkd13zbY .mbr-section-subtitle {
   color: #ffffff;
 }
-.cid-uUBHlV4BHg {
-  padding-top: 3rem;
-  padding-bottom: 2rem;
-  background-color: #021c33;
-}
-.cid-uUBHlV4BHg .mbr-fallback-image.disabled {
+.cid-uUCdaturhC .mbr-fallback-image.disabled {
   display: none;
 }
-.cid-uUBHlV4BHg .mbr-fallback-image {
+.cid-uUCdaturhC .mbr-fallback-image {
   display: block;
   background-size: cover;
   background-position: center center;
@@ -1614,20 +1609,7 @@ a {
   height: 100%;
   position: absolute;
   top: 0;
-}
-.cid-uUBHlV4BHg .video-wrapper iframe {
-  width: 100%;
-}
-.cid-uUBHlV4BHg .mbr-section-title,
-.cid-uUBHlV4BHg .mbr-section-subtitle,
-.cid-uUBHlV4BHg .mbr-text {
-  text-align: center;
-}
-.cid-uUBHlV4BHg .mbr-section-title {
-  color: #98dee8;
-}
-.cid-uUBHlV4BHg .mbr-section-subtitle {
-  color: #ffffff;
+  background-image: url("../../../assets/images/background13.webp");
 }
 .cid-uUln3WmeUL {
   padding-top: 2rem;
