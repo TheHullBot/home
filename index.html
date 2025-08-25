@@ -26,11 +26,14 @@
   <link rel="stylesheet" href="assets/socicon/css/styles.css">
   <link rel="stylesheet" href="assets/theme/css/style.css">
   <link href="assets/fonts/style.css" rel="stylesheet">
-  <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css?v=fb7uk1"><link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css?v=fb7uk1" type="text/css">
+  <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css?v=up0EZx"><link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css?v=up0EZx" type="text/css">
 
   
   
-  
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
   
@@ -520,17 +523,53 @@
 
 <section data-bs-version="5.1" class="video3 cid-uUCGHGSZ0x" id="video3-1x">
     
+
+    <style>
+        .vertical-video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 177.78%; /* 9:16 */
+            overflow: hidden;
+            background-color: black;
+            border-radius: 1rem;
+        }
+
+        .vertical-video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%;
+            width: auto;
+            object-fit: cover;
+        }
+
+        @media (min-width: 768px) {
+            .vertical-video-wrapper {
+                max-width: 420px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+
+    
     
     
     <div class="container">
-        
+        <div class="mbr-section-head">
+            <h4 class="mbr-section-title mbr-fonts-style mb-0 display-2">Видео процесса</h4>
+            
+        </div>
+
         <div class="row mt-4">
-            <div class="col-12 col-md-6 video-block">
-                <div class="video-wrapper"><video style="width:100%" controls autoplay loop playsinline><source src="https://raw.githubusercontent.com/TheHullBot/home/16797fdc52b996943dfffb43b20ace81b3aba370/assets/images/hullbotall.mp4?loop=1&amp;autoplay=1"/></video></div>
-                
-            </div>
-            <div class="col-12 col-md-6 video-block">
-                <div class="video-wrapper"><video style="width:100%" controls autoplay loop playsinline><source src="https://raw.githubusercontent.com/TheHullBot/home/16797fdc52b996943dfffb43b20ace81b3aba370/assets/images/hullbotall.mp4?loop=1&amp;autoplay=1"/></video></div>
+            <div class="col-12 col-md-6 video-block mx-auto">
+                <div class="vertical-video-wrapper">
+                    <video autoplay="" muted="" loop="" playsinline="">
+                        <source src="https://raw.githubusercontent.com/TheHullBot/home/16797fdc52b996943dfffb43b20ace81b3aba370/assets/images/hullbotall.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
                 
             </div>
         </div>
@@ -684,7 +723,7 @@
         </div>
         <div class="row justify-content-center mt-4">
             <div class="col-lg-8 mx-auto mbr-form" data-form-type="formoid">
-                <form action="https://mobirise.eu/" method="POST" class="mbr-form form-with-styler mx-auto" data-form-title="Form Name"><input type="hidden" name="email" data-form-email="true" value="72n01RtuhgNBqik0P/h72UfAmmCKppRvhs/Wo3z5+YIivlxfWBkEvEKRWm2lXqqxJVqDiwKVOca93gzMCq6RFAJMbNMl9TCCGQhduXlPLlNkGDeKH8Kv+uNHkvRJtyGQ">
+                <form action="https://mobirise.eu/" method="POST" class="mbr-form form-with-styler mx-auto" data-form-title="Form Name"><input type="hidden" name="email" data-form-email="true" value="5tECc6Aj42zzbAjsnvMX8mV874cSncJyBFM/7LHDHYN9Z6mC2IWfjoIf5YEt5Xjj0eQ4MBFYkYUpK2ClJCQXZtszC+38ZNMb4YEdOHN5ap8oUvLg7wt35GgEGaxCemt4">
                     <div class="row">
                         <div hidden="hidden" data-form-alert="" class="alert alert-success col-12">Благодарим за обращение! 
 Мы свяжемся с вами при первой же возможности!</div>
@@ -757,7 +796,7 @@
             </div>
             <div class="col-6 col-md-4 col-lg-3">
                 <h5 class="mbr-section-subtitle mbr-fonts-style mb-2 display-7">Офисы</h5>
-                <ul class="list mbr-fonts-style display-4"><p>Владивосток</p><p>Санкт-Петербург</p></ul>
+                <ul class="list mbr-fonts-style display-4"><p><span style="font-size: 1.1rem;">Санкт-Петербург</span></p><p><span style="font-size: 1.1rem;">Владивосток<br></span><br></p></ul>
             </div>
             
         </div>
