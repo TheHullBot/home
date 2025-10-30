@@ -903,7 +903,8 @@
               "color": "#ffffff"
             },
             ".mbr-section-title, .card-box": {
-              "color": "#98dee8"
+              "color": "#98dee8",
+              "text-align": "center"
             },
             ".card-title, .card-img": {
               "color": "#98dee8"
