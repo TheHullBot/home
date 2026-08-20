@@ -34,7 +34,9 @@ import { media } from '../media';
     </h1>
 
     <p data-speakable class="mt-8 max-w-xl text-lg leading-relaxed text-foam-300 text-pretty">
-      {hero.lead}
+      {hero.lead.map((part) =>
+        part.accent ? <strong class="font-semibold text-foam-100">{part.t}</strong> : part.t,
+      )}
     </p>
 
     <div class="mt-10 flex flex-wrap gap-3">
