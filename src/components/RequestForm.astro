@@ -1,5 +1,5 @@
 ---
-import { company } from '../content/site';
+import { company, workScope } from '../content/site';
 
 // Обработчик — Cloud Function в Яндекс Облаке, данные не покидают РФ.
 const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
@@ -55,6 +55,21 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
             {objectTypes.map((t) => <option value={t}>{t}</option>)}
           </select>
         </div>
+        <div id="imo-field" hidden>
+          <label class={label} for="f-imo">
+            Номер IMO <span class="font-normal text-foam-500">(если знаете)</span>
+          </label>
+          <input
+            id="f-imo"
+            name="imo"
+            type="text"
+            inputmode="numeric"
+            maxlength="7"
+            pattern="[0-9]{7}"
+            class={field}
+            placeholder="9074729"
+          />
+        </div>
         <div>
           <label class={label} for="f-size">Размер</label>
           <input id="f-size" name="size" type="text" class={field} placeholder="длина 180 м или 4200 м²" />
@@ -64,27 +79,68 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
           <input id="f-place" name="place" type="text" class={field} placeholder="Новороссийск, причал 12" />
         </div>
         <div>
-          <label class={label} for="f-when">Желаемые сроки</label>
-          <input id="f-when" name="when" type="text" class={field} placeholder="вторая половина мая" />
+          <label class={label} for="f-when">Даты стоянки</label>
+          <input id="f-when" name="when" type="text" class={field} placeholder="подход 14 мая, отход 16 мая" />
         </div>
       </div>
+
+      <fieldset>
+        <legend class={label}>Что нужно сделать</legend>
+        <div class="flex flex-wrap gap-2">
+          {workScope.map((w) => (
+            <label
+              class="cursor-pointer rounded-full border border-white/15 bg-abyss-950/60 px-4 py-2 text-sm
+                     text-foam-300 transition-colors has-checked:border-signal-500 has-checked:bg-signal-500/10
+                     has-checked:text-signal-400"
+            >
+              <input type="checkbox" name="scope" value={w} class="sr-only" />
+              {w}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <hr class="border-white/10" />
 
       <div class="grid gap-5 sm:grid-cols-2">
         <div>
           <label class={label} for="f-name">Имя <span class="text-signal-500">*</span></label>
-          <input id="f-name" name="name" type="text" required class={field} placeholder="Как к вам обращаться" />
+          <input
+            id="f-name"
+            name="name"
+            type="text"
+            required
+            autocomplete="name"
+            class={field}
+            placeholder="Как к вам обращаться"
+          />
         </div>
         <div>
           <label class={label} for="f-phone">Телефон <span class="text-signal-500">*</span></label>
-          <input id="f-phone" name="phone" type="tel" required class={field} placeholder="+7 900 000-00-00" />
+          <input
+            id="f-phone"
+            name="phone"
+            type="tel"
+            required
+            autocomplete="tel"
+            inputmode="tel"
+            class={field}
+            placeholder="+7 900 000-00-00"
+          />
         </div>
       </div>
 
       <div>
         <label class={label} for="f-email">Почта</label>
-        <input id="f-email" name="email" type="email" class={field} placeholder="name@company.ru" />
+        <input
+          id="f-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          inputmode="email"
+          class={field}
+          placeholder="name@company.ru"
+        />
       </div>
 
       <div>
@@ -128,6 +184,20 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
     const endpoint = form.dataset.endpoint || '';
     const phone = form.dataset.phone || '';
 
+    const typeSelect = form.querySelector<HTMLSelectElement>('#f-type');
+    const imoField = document.getElementById('imo-field');
+
+    // Номер IMO есть только у судов: для пирса или моста поле лишнее
+    const toggleImo = () => {
+      if (imoField && typeSelect) imoField.hidden = typeSelect.value !== 'Судно';
+    };
+    toggleImo();
+    typeSelect?.addEventListener('change', toggleImo);
+
+    const markBad = (el: HTMLElement | null) => el?.classList.add('border-red-400/70');
+    const clearBad = () =>
+      form.querySelectorAll('.border-red-400\\/70').forEach((el) => el.classList.remove('border-red-400/70'));
+
     const say = (kind: 'ok' | 'err', text: string) => {
       status.className =
         kind === 'ok'
@@ -139,9 +209,27 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      clearBad();
       const consent = form.querySelector<HTMLInputElement>('#f-consent');
-      if (!form.checkValidity() || !consent?.checked) {
-        say('err', 'Заполните имя и телефон и подтвердите согласие на обработку данных.');
+      const name = form.querySelector<HTMLInputElement>('#f-name');
+      const phone = form.querySelector<HTMLInputElement>('#f-phone');
+
+      // Подсказываем конкретно, что не так, а не общей фразой на всю форму
+      const missing: string[] = [];
+      if (!name?.value.trim()) { markBad(name); missing.push('имя'); }
+      if (!phone?.value.trim()) { markBad(phone); missing.push('телефон'); }
+      if (missing.length) {
+        say('err', `Не хватает: ${missing.join(' и ')}.`);
+        (missing[0] === 'имя' ? name : phone)?.focus();
+        return;
+      }
+      if (!consent?.checked) {
+        say('err', 'Отметьте согласие на обработку персональных данных.');
+        consent?.focus();
+        return;
+      }
+      if (!form.checkValidity()) {
+        say('err', 'Проверьте выделенные поля.');
         form.reportValidity();
         return;
       }
@@ -150,8 +238,11 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
         return;
       }
 
-      const payload = Object.fromEntries(new FormData(form).entries());
-      payload.consent = true as never;
+      const data = new FormData(form);
+      const payload: Record<string, unknown> = Object.fromEntries(data.entries());
+      // чекбоксов может быть несколько, из entries придёт только последний
+      payload.scope = data.getAll('scope').join(', ');
+      payload.consent = true;
 
       button.disabled = true;
       const original = button.textContent;
