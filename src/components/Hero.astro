@@ -5,7 +5,7 @@ import { media } from '../media';
 
 <section class="hero relative flex min-h-[min(100svh,50rem)] items-center overflow-hidden bg-abyss-950">
   <video
-    class="absolute inset-0 h-full w-full object-cover object-center sm:object-[66%_62%] brightness-125 saturate-110"
+    class="absolute inset-0 h-full w-full object-cover object-center sm:object-[66%_62%]"
     autoplay
     muted
     loop
@@ -18,10 +18,10 @@ import { media } from '../media';
   ></video>
 
   <!-- затемнение только под текстовой колонкой: справа кадр остаётся открытым -->
-  <div class="absolute inset-0 bg-gradient-to-r from-abyss-950/92 via-abyss-950/35 via-28% to-transparent"></div>
-  <div class="absolute inset-0 bg-gradient-to-t from-abyss-950/85 via-transparent to-abyss-950/40"></div>
+  <div class="absolute inset-0 bg-gradient-to-r from-abyss-950/90 via-abyss-950/30 via-30% to-transparent"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-abyss-950/80 via-transparent to-abyss-950/35"></div>
   {/* на узком экране текст идёт во всю ширину, боковой градиент его не прикрывает */}
-  <div class="absolute inset-0 bg-abyss-950/45 sm:hidden"></div>
+  <div class="absolute inset-0 bg-abyss-950/40 sm:hidden"></div>
 
   <div class="relative mx-auto w-full max-w-7xl px-5 pt-32 pb-24 lg:px-8">
     <p class="mb-6 flex items-center gap-3 text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">
