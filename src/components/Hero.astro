@@ -80,6 +80,19 @@ import { media } from '../media';
       src.src = (small ? video.dataset.srcSm : video.dataset.src)!;
       src.type = 'video/mp4';
       video.appendChild(src);
+
+      // Страховка: если на узком экране почему-то оказался горизонтальный
+      // файл (например, на CDN ещё лежит старая версия), возвращаем
+      // смещение кадра, иначе робот уходит за край.
+      video.addEventListener(
+        'loadedmetadata',
+        () => {
+          const landscape = video.videoWidth > video.videoHeight;
+          if (small && landscape) video.style.objectPosition = '69% 55%';
+        },
+        { once: true },
+      );
+
       video.load();
       video.play().catch(() => {});
     }
