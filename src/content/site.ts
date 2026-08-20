@@ -64,14 +64,7 @@ export const benefits = [
   },
 ] as const;
 
-export const objects = [
-  'Суда',
-  'Спецтехника',
-  'Платформы',
-  'Мосты',
-  'Пирсы',
-  'Винты и рулевые устройства',
-] as const;
+export const objects = ['Суда', 'Спецтехника', 'Платформы', 'Мосты', 'Пирсы'] as const;
 
 // Перерасход мощности из-за обрастания по Schultz M.P. (2007),
 // Effects of coating roughness and biofouling on ship resistance and powering,
