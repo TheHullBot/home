@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Палитра снята с прежнего сайта: тёмная вода + жёлтый корпуса робота */
+  --color-abyss-950: #01121f;
+  --color-abyss-900: #021c33;
+  --color-abyss-800: #052744;
+  --color-abyss-700: #0a3557;
+  --color-abyss-600: #14496f;
+
+  --color-signal-400: #ffe161;
+  --color-signal-500: #ffd10a;
+  --color-signal-600: #e0b400;
+
+  --color-foam-100: #e8f1f8;
+  --color-foam-300: #a9c2d6;
+  --color-foam-500: #6f8ba3;
+
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --text-hero: clamp(2.75rem, 7vw, 5.5rem);
+  --text-display: clamp(2rem, 4.2vw, 3.25rem);
+  --text-title: clamp(1.375rem, 2.2vw, 1.875rem);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-abyss-950);
+    color: var(--color-foam-100);
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01', 'cv05';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal-500);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-signal-500);
+    color: var(--color-abyss-950);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

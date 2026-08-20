@@ -1,0 +1,54 @@
+---
+import { company } from '../content/site';
+---
+
+{/* появляется после первого экрана, только на узких экранах */}
+<div
+  id="sticky-cta"
+  class="fixed inset-x-0 bottom-0 z-30 translate-y-full border-t border-white/10 bg-abyss-950/95 px-4 py-3 backdrop-blur-lg transition-transform duration-300 sm:hidden"
+>
+  <div class="flex gap-2.5">
+    <a
+      href={`tel:${company.phoneHref}`}
+      aria-label={`Позвонить ${company.phone}`}
+      class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/20 text-foam-100"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M6.5 3.5 8 7l-1.7 1.4a11 11 0 0 0 5.3 5.3L13 12l3.5 1.5v3A1.5 1.5 0 0 1 15 18C8.9 17.6 4.4 13.1 4 7a1.5 1.5 0 0 1 1.5-1.5h1Z" stroke-linejoin="round" />
+      </svg>
+    </a>
+    <a
+      href="#request"
+      class="flex flex-1 items-center justify-center rounded-full bg-signal-500 px-6 py-3 font-semibold text-abyss-950"
+    >
+      Рассчитать объект
+    </a>
+  </div>
+</div>
+
+<script>
+  const bar = document.getElementById('sticky-cta');
+  const form = document.getElementById('request');
+
+  if (bar) {
+    // прячем панель, когда пользователь дошёл до самой формы: она там лишняя
+    const nearForm = { active: false };
+    if (form) {
+      new IntersectionObserver(
+        ([e]) => {
+          nearForm.active = e.isIntersecting;
+          update();
+        },
+        { threshold: 0.15 },
+      ).observe(form);
+    }
+
+    const update = () => {
+      const passedHero = window.scrollY > window.innerHeight * 0.8;
+      bar.classList.toggle('translate-y-full', !passedHero || nearForm.active);
+    };
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+</script>

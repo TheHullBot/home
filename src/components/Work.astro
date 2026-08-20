@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import w1 from '../assets/work-1.webp';
+import w2 from '../assets/work-2.webp';
+import w3 from '../assets/work-3.webp';
+import w4 from '../assets/work-4.webp';
+
+const shots = [
+  { img: w2, alt: 'Робот у борта судна: кавитационная струя снимает обрастание' },
+  { img: w1, alt: 'Пост управления бригады развёрнут на причале у борта' },
+  { img: w3, alt: 'Выгрузка кабельных барабанов и оборудования на причал' },
+  { img: w4, alt: 'Подготовка аппарата к спуску на воду с палубы' },
+];
+---
+
+<Section
+  eyebrow="В работе"
+  title="Что происходит на причале"
+  lead="Комплекс приезжает на объект целиком и разворачивается на причальной стенке: пост управления, насосная станция, кабельные барабаны и сам аппарат. Робот работает с воды вдоль борта, судну не нужно вставать в док."
+>
+  <ul class="grid gap-4 sm:grid-cols-2">
+    {shots.map((s) => (
+      <li class="overflow-hidden rounded-2xl border border-white/10">
+        <Image
+          src={s.img}
+          alt={s.alt}
+          widths={[560, 1120]}
+          sizes="(min-width: 640px) 50vw, 100vw"
+          class="h-full w-full object-cover"
+        />
+      </li>
+    ))}
+  </ul>
+</Section>

@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import disc from '../assets/eq-disc.png';
+import gun from '../assets/eq-gun.png';
+import pump from '../assets/eq-pump.png';
+import control from '../assets/eq-control.png';
+import cables from '../assets/eq-cables.png';
+
+const items = [
+  { img: disc, label: 'Кавитационный струйный диск' },
+  { img: gun, label: 'Кавитационный пистолет' },
+  { img: pump, label: 'Трансформатор и насосная станция' },
+  { img: control, label: 'Система эксплуатации и контроля' },
+  { img: cables, label: 'Силовой и U-образный кабели' },
+];
+---
+
+<Section
+  eyebrow="Оснащение"
+  title="Вспомогательные системы и оборудование"
+  lead="Комплекс приезжает на объект целиком: от рабочего инструмента до питания, управления и кабельного хозяйства."
+>
+  <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+    {items.map((it) => (
+      <li class="rounded-2xl border border-white/10 bg-abyss-900 p-5">
+        <Image
+          src={it.img}
+          alt={it.label}
+          widths={[240, 480]}
+          sizes="(min-width: 1024px) 18vw, (min-width: 640px) 45vw, 90vw"
+          class="mx-auto h-32 w-auto object-contain"
+        />
+        <p class="mt-5 text-sm leading-snug font-medium text-foam-100">{it.label}</p>
+      </li>
+    ))}
+  </ul>
+</Section>

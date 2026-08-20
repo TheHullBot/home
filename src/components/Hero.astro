@@ -1,0 +1,93 @@
+---
+import { hero } from '../content/site';
+import { media } from '../media';
+---
+
+<section
+  class="relative flex min-h-[min(100svh,50rem)] items-center overflow-hidden bg-abyss-950 bg-cover bg-[position:78%_62%] sm:bg-[position:66%_62%]"
+  style={{
+    backgroundImage: "url('/hero-poster.jpg'), url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAAQABAAD//gAPTGF2YzYzLjEuMTAxAP/bAEMACBAQExATFhYWFhYWGhgaGxsbGhoaGhsbGx0dHSIiIh0dHRsbHR0gICIiJSYlIyMiIyYmKCgoMDAuLjg4OkVFU//EAHMAAAMBAQEBAAAAAAAAAAAAAAUEBgIAAwEBAAIDAQEAAAAAAAAAAAAAAAAFBAIDAQYQAAEEAQIEBwEAAAAAAAAAAAEAAgMREiExMgRxBYGRM1FCoUETEQEBAAMAAgMBAAAAAAAAAAAAAQIRUQMSYUExE//AABEIABIAIAMBEgACEgADEgD/2gAMAwEAAhEDEQA/ABjXit0FY9KdXhk9Dc8ewhUjXi0pEHE7KBMKnHF8uM+yYWEla0noYzkCRGQDwkn7/FHmC+W7NY6+d7Mb5ZxAmp+hH9yTsnJpWyUyNmOpyoaHx9lX1nW0mkz+t4hXK1GcpsSvvKcJWgZuKQcIXfEKoWDyLjidT5rB2K1gitFGe2ASMmzGVA1lrXS1rtPpz9HLroD/2Q==')",
+    backgroundSize: 'cover',
+  }}
+>
+  <video
+    class="absolute inset-0 h-full w-full object-cover object-[78%_62%] sm:object-[66%_62%] brightness-125 saturate-110"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="none"
+    poster="/hero-poster.jpg"
+    aria-hidden="true"
+    tabindex="-1"
+    data-src={media("hero.mp4")}
+    data-src-sm={media("hero-sm.mp4")}
+  ></video>
+
+  <!-- затемнение только под текстовой колонкой: справа кадр остаётся открытым -->
+  <div class="absolute inset-0 bg-gradient-to-r from-abyss-950/92 via-abyss-950/35 via-28% to-transparent"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-abyss-950/85 via-transparent to-abyss-950/40"></div>
+  {/* на узком экране текст идёт во всю ширину, боковой градиент его не прикрывает */}
+  <div class="absolute inset-0 bg-abyss-950/45 sm:hidden"></div>
+
+  <div class="relative mx-auto w-full max-w-7xl px-5 pt-32 pb-24 lg:px-8">
+    <p class="mb-6 flex items-center gap-3 text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">
+      <span class="h-px w-8 bg-signal-500"></span>
+      {hero.kicker}
+    </p>
+
+    <h1 class="max-w-3xl text-[length:var(--text-hero)] leading-[1.02] font-bold tracking-tight text-balance">
+      {hero.title}
+    </h1>
+
+    <p data-speakable class="mt-8 max-w-xl text-lg leading-relaxed text-foam-300 text-pretty">
+      {hero.lead}
+    </p>
+
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a
+        href="#request"
+        class="rounded-full bg-signal-500 px-7 py-3.5 font-semibold text-abyss-950 transition-colors hover:bg-signal-400"
+      >
+        Рассчитать объект
+      </a>
+      <a
+        href="#request"
+        class="rounded-full border border-white/20 px-7 py-3.5 font-semibold text-white backdrop-blur-sm transition-colors hover:border-white/50 hover:bg-white/5"
+      >
+        Запросить инспекцию
+      </a>
+    </div>
+
+    <p class="mt-8 max-w-xl text-sm leading-relaxed text-foam-500">
+      Выезжаем в порты России. Базы в Санкт-Петербурге и Владивостоке.
+      Если судно уже в доке, работаем и там.
+    </p>
+  </div>
+
+</section>
+
+<script>
+  const video = document.querySelector<HTMLVideoElement>('[data-src]');
+
+  if (video) {
+    const conn = (navigator as any).connection;
+    const type = (conn && conn.effectiveType) || '';
+    const saveData = Boolean(conn && conn.saveData);
+    const verySlow = /(^|-)2g$/.test(type);
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // экономия трафика, 2G или просьба убрать движение — остаётся постер,
+    // он уже нарисован фоном секции, так что экран не пустой
+    if (!saveData && !verySlow && !calm) {
+      // на телефонах кадр всё равно обрезается по бокам, полный размер там не нужен
+      const small = window.innerWidth * (window.devicePixelRatio || 1) < 1100 || type === '3g';
+      const src = document.createElement('source');
+      src.src = (small ? video.dataset.srcSm : video.dataset.src)!;
+      src.type = 'video/mp4';
+      video.appendChild(src);
+      video.load();
+      video.play().catch(() => {});
+    }
+  }
+</script>

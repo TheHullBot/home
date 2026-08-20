@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import fouling from '../assets/ba-fouling-heavy.webp';
+import propeller from '../assets/ba-propeller.webp';
+import partial from '../assets/ba-partial.webp';
+import passes from '../assets/ba-passes.webp';
+import night from '../assets/ba-night.webp';
+import clean from '../assets/ba-clean.webp';
+
+const stages = [
+  {
+    tag: 'До',
+    tone: 'text-red-300 border-red-400/30 bg-red-500/10',
+    shots: [
+      { img: fouling, alt: 'Плотное биообрастание на подводной части корпуса: ракушка и известковые наросты' },
+      { img: propeller, alt: 'Гребной винт и дейдвуд, полностью заросшие обрастанием' },
+    ],
+  },
+  {
+    tag: 'В процессе',
+    tone: 'text-signal-400 border-signal-500/30 bg-signal-500/10',
+    shots: [
+      { img: passes, alt: 'Полосы от проходов робота на корпусе: очищенные участки чередуются с необработанными' },
+      { img: night, alt: 'Очистка корпуса в тёмное время суток при свете прожектора робота' },
+    ],
+  },
+  {
+    tag: 'После',
+    tone: 'text-emerald-300 border-emerald-400/30 bg-emerald-500/10',
+    shots: [
+      { img: partial, alt: 'Граница обработки: слева обрастание, справа очищенная поверхность' },
+      { img: clean, alt: 'Корпус после очистки: обрастание снято, лакокрасочное покрытие не нарушено' },
+    ],
+  },
+];
+---
+
+<Section
+  id="before-after"
+  eyebrow="До и после"
+  title="Что происходит с корпусом за одну смену"
+  lead="Кадры сняты камерами инспекционного робота и бригадой на объектах. Обрастание уходит вместе с сопротивлением воды, покрытие при этом остаётся целым."
+>
+  <div class="space-y-10">
+    {stages.map((st) => (
+      <div>
+        <p class={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase ${st.tone}`}>
+          {st.tag}
+        </p>
+        <ul class="mt-4 grid gap-4 sm:grid-cols-2">
+          {st.shots.map((s) => (
+            <li class="overflow-hidden rounded-2xl border border-white/10">
+              <Image
+                src={s.img}
+                alt={s.alt}
+                widths={[520, 1040]}
+                sizes="(min-width: 640px) 50vw, 100vw"
+                class="h-56 w-full object-cover sm:h-64"
+              />
+              <p class="bg-abyss-900 px-4 py-3 text-sm leading-snug text-foam-300">{s.alt}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</Section>

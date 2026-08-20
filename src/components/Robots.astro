@@ -1,0 +1,90 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import { robots, vendorProof } from '../content/site';
+import cr01 from '../assets/robot-cr01.png';
+import vr01 from '../assets/robot-vr01.png';
+import specCr01 from '../assets/spec-cr01.webp';
+import specVr01 from '../assets/spec-vr01.webp';
+
+const pics: Record<string, ImageMetadata> = { cr01, vr01 };
+const specs: Record<string, ImageMetadata> = { cr01: specCr01, vr01: specVr01 };
+---
+
+<Section
+  id="robots"
+  eyebrow="Наши роботы"
+  title="Два аппарата: один чистит, второй смотрит"
+  lead="Инспекция даёт картину обрастания и повреждений до работ и подтверждает результат после. Очистка снимает биообрастание кавитацией, не касаясь лакокрасочного покрытия."
+>
+  <p class="mb-8 flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-2xl border border-white/10 bg-abyss-900 px-6 py-5">
+    <span class="text-[length:var(--text-title)] leading-none font-bold text-signal-500">
+      {vendorProof.value}
+    </span>
+    <span class="font-medium text-foam-100">{vendorProof.claim}</span>
+    <span class="w-full text-sm text-foam-500">{vendorProof.note}</span>
+  </p>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    {robots.map((r) => (
+      <article class="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-abyss-900">
+        <div class="bg-gradient-to-br from-abyss-800 to-abyss-900 p-6">
+          <Image
+            src={pics[r.id]}
+            alt={`${r.kind} ${r.model}`}
+            widths={[480, 960]}
+            sizes="(min-width: 1024px) 45vw, 90vw"
+            class="mx-auto h-52 w-auto object-contain"
+          />
+        </div>
+
+        <div class="flex flex-1 flex-col p-7">
+          <p class="text-sm text-signal-500">{r.kind}</p>
+          <h3 class="mt-1 text-2xl font-bold tracking-tight">{r.model}</h3>
+          <p class="mt-4 leading-relaxed text-foam-300">{r.summary}</p>
+
+          <dl class="mt-7 divide-y divide-white/10 border-y border-white/10 text-sm">
+            {r.specs.map((s) => (
+              <div class="flex items-baseline justify-between gap-4 py-2.5">
+                <dt class="text-foam-500">{s.k}</dt>
+                <dd class="text-right font-semibold tabular-nums">{s.v}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <ul class="mt-6 space-y-2.5 text-sm leading-relaxed text-foam-300">
+            {r.notes.map((n) => (
+              <li class="flex gap-2.5">
+                <span aria-hidden="true" class="mt-2 h-1 w-1 shrink-0 rounded-full bg-signal-500"></span>
+                <span>{n}</span>
+              </li>
+            ))}
+          </ul>
+
+          <details class="group/spec mt-auto pt-7">
+            <summary class="flex cursor-pointer list-none items-center gap-2 text-sm font-medium text-signal-500 marker:content-none hover:text-signal-400">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <rect x="2.5" y="2" width="11" height="12" rx="1.5" />
+                <path d="M5.5 6h5M5.5 9h3" stroke-linecap="round" />
+              </svg>
+              Схема аппарата
+              <span class="transition-transform group-open/spec:rotate-180" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 4.5 6 8l3-3.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </summary>
+            <Image
+              src={specs[r.id]}
+              alt={`Схема ${r.model} с обозначением технических параметров`}
+              widths={[420, 840]}
+              sizes="(min-width: 1024px) 45vw, 90vw"
+              loading="lazy"
+              class="mt-4 w-full rounded-xl border border-white/10"
+            />
+          </details>
+        </div>
+      </article>
+    ))}
+  </div>
+</Section>

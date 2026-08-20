@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Objects from '../components/Objects.astro';
+import Process from '../components/Process.astro';
+import Robots from '../components/Robots.astro';
+import Equipment from '../components/Equipment.astro';
+import Work from '../components/Work.astro';
+import ProcessVideo from '../components/ProcessVideo.astro';
+import BeforeAfter from '../components/BeforeAfter.astro';
+import Comparison from '../components/Comparison.astro';
+import Calculator from '../components/Calculator.astro';
+import Faq from '../components/Faq.astro';
+import RequestForm from '../components/RequestForm.astro';
+import Footer from '../components/Footer.astro';
+import StickyCta from '../components/StickyCta.astro';
+import { benefits } from '../content/site';
+---
+
+<Base
+  title="Очистка корпуса судна на плаву | Санкт-Петербург, Владивосток"
+  description="Роботизированная очистка днища и корпуса судна от обрастания без докования: судно 180 м за 12 часов, экономия топлива до 30%, ЛКП не повреждается. Работаем в портах России, базы в Санкт-Петербурге и Владивостоке."
+>
+  <Header />
+  <main id="main">
+    <Hero />
+
+    <section class="mx-auto max-w-7xl scroll-mt-24 px-5 pt-16 pb-4 lg:px-8 lg:pt-20">
+      <header class="mb-10 max-w-3xl">
+        <p class="mb-4 flex items-center gap-3 text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">
+          <span class="h-px w-8 bg-signal-500"></span>
+          Результат
+        </p>
+        <h2 class="text-[length:var(--text-display)] leading-tight font-bold tracking-tight text-balance">
+          Что меняется после очистки
+        </h2>
+      </header>
+
+      <dl class="grid gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+        {benefits.map((b) => (
+          <div class="bg-abyss-900 p-7">
+            <dt class="text-[length:var(--text-title)] font-bold text-signal-500">{b.value}</dt>
+            <dd class="mt-2 font-semibold">{b.label}</dd>
+            <dd class="mt-1.5 text-sm leading-relaxed text-foam-500">{b.note}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <Objects />
+    <Comparison />
+    <Process />
+    <Robots />
+    <Equipment />
+    <Work />
+    <ProcessVideo />
+    <BeforeAfter />
+    <Calculator />
+    <Faq />
+    <RequestForm />
+  </main>
+  <Footer />
+  <StickyCta />
+</Base>
