@@ -1,0 +1,97 @@
+---
+// Политика открывается окном поверх страницы, но /privacy/ остаётся
+// настоящей страницей: по 152-ФЗ у политики должен быть постоянный адрес,
+// и без JS ссылка просто ведёт туда же, как обычно.
+---
+
+<dialog
+  id="policy-dialog"
+  class="max-h-[88vh] max-w-[min(92vw,48rem)] rounded-2xl border border-white/10 bg-abyss-900 p-0
+         backdrop:bg-abyss-950/85 backdrop:backdrop-blur-sm"
+  aria-labelledby="policy-dialog-title"
+>
+  <div class="flex items-center justify-between gap-4 border-b border-white/10 px-6 py-4">
+    <p id="policy-dialog-title" class="text-sm font-semibold text-foam-100">
+      Политика обработки персональных данных
+    </p>
+    <div class="flex shrink-0 items-center gap-1">
+      <a
+        href="/privacy/"
+        title="Открыть отдельной страницей"
+        class="flex h-9 items-center rounded-lg px-3 text-xs text-foam-300 transition-colors hover:bg-white/10 hover:text-white"
+      >
+        Открыть страницей
+      </a>
+      <button
+        type="button"
+        data-policy-close
+        aria-label="Закрыть"
+        class="flex h-9 w-9 items-center justify-center rounded-lg text-foam-300 transition-colors hover:bg-white/10 hover:text-white"
+      >
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 4l10 10M14 4L4 14" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="policy-dialog-body"
+    class="max-h-[calc(88vh-4.25rem)] space-y-5 overflow-auto px-6 py-6 leading-relaxed text-foam-300
+           [&_a]:text-signal-500 [&_a]:underline [&_a]:underline-offset-2
+           [&_h1]:sr-only
+           [&_h2]:mt-8 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foam-100
+           [&_li]:pl-1 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6
+           [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6"
+  >
+    <p class="text-foam-500">Загружаем…</p>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('policy-dialog') as HTMLDialogElement | null;
+  const body = document.getElementById('policy-dialog-body');
+
+  if (dialog && body) {
+    let loaded = false;
+
+    const load = async () => {
+      if (loaded) return;
+      const res = await fetch('/privacy/');
+      if (!res.ok) throw new Error(String(res.status));
+      const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      const main = doc.querySelector('main');
+      if (!main) throw new Error('no main');
+      body.replaceChildren(...Array.from(main.children));
+      loaded = true;
+    };
+
+    document.querySelectorAll<HTMLAnchorElement>('a[href="/privacy/"]').forEach((link) => {
+      // ссылка внутри самого окна должна работать как обычная
+      if (link.closest('#policy-dialog')) return;
+
+      link.addEventListener('click', async (e) => {
+        // средняя кнопка, Cmd и Ctrl открывают в новой вкладке — не мешаем
+        if (e.metaKey || e.ctrlKey || e.shiftKey || (e as MouseEvent).button !== 0) return;
+        e.preventDefault();
+        dialog.showModal();
+        try {
+          await load();
+        } catch {
+          // не смогли загрузить — ведём себя как обычная ссылка
+          dialog.close();
+          window.location.href = '/privacy/';
+        }
+      });
+    });
+
+    dialog.querySelector('[data-policy-close]')?.addEventListener('click', () => dialog.close());
+
+    dialog.addEventListener('click', (e) => {
+      const box = dialog.getBoundingClientRect();
+      const outside =
+        e.clientX < box.left || e.clientX > box.right || e.clientY < box.top || e.clientY > box.bottom;
+      if (outside) dialog.close();
+    });
+  }
+</script>
