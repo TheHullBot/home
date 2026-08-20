@@ -61,30 +61,71 @@ const specs: Record<string, ImageMetadata> = { cr01: specCr01, vr01: specVr01 };
             ))}
           </ul>
 
-          <details class="group/spec mt-auto pt-7">
-            <summary class="flex cursor-pointer list-none items-center gap-2 text-sm font-medium text-signal-500 marker:content-none hover:text-signal-400">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <rect x="2.5" y="2" width="11" height="12" rx="1.5" />
-                <path d="M5.5 6h5M5.5 9h3" stroke-linecap="round" />
-              </svg>
-              Схема аппарата
-              <span class="transition-transform group-open/spec:rotate-180" aria-hidden="true">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 4.5 6 8l3-3.5" stroke-linecap="round" stroke-linejoin="round" />
+          <button
+            type="button"
+            data-spec-open={r.id}
+            class="mt-auto flex items-center gap-2 pt-7 text-sm font-medium text-signal-500 transition-colors hover:text-signal-400"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="2.5" y="2" width="11" height="12" rx="1.5" />
+              <path d="M5.5 6h5M5.5 9h3" stroke-linecap="round" />
+            </svg>
+            Схема аппарата
+          </button>
+
+          <dialog
+            id={`spec-${r.id}`}
+            class="max-h-[92vh] max-w-[min(92vw,42rem)] rounded-2xl border border-white/10 bg-abyss-900 p-0
+                   backdrop:bg-abyss-950/85 backdrop:backdrop-blur-sm"
+            aria-label={`Схема ${r.model}`}
+          >
+            <div class="flex items-center justify-between gap-4 border-b border-white/10 px-5 py-3.5">
+              <p class="text-sm font-semibold text-foam-100">Схема {r.model}</p>
+              <button
+                type="button"
+                data-spec-close
+                aria-label="Закрыть"
+                class="flex h-9 w-9 items-center justify-center rounded-lg text-foam-300 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 4l10 10M14 4L4 14" stroke-linecap="round" />
                 </svg>
-              </span>
-            </summary>
-            <Image
-              src={specs[r.id]}
-              alt={`Схема ${r.model} с обозначением технических параметров`}
-              widths={[420, 840]}
-              sizes="(min-width: 1024px) 45vw, 90vw"
-              loading="lazy"
-              class="mt-4 w-full rounded-xl border border-white/10"
-            />
-          </details>
+              </button>
+            </div>
+            <div class="max-h-[calc(92vh-3.5rem)] overflow-auto p-4">
+              <Image
+                src={specs[r.id]}
+                alt={`Схема ${r.model} с обозначением технических параметров`}
+                widths={[560, 1120]}
+                sizes="(min-width: 640px) 40rem, 90vw"
+                loading="lazy"
+                class="mx-auto w-full rounded-xl"
+              />
+            </div>
+          </dialog>
         </div>
       </article>
     ))}
   </div>
 </Section>
+
+<script>
+  // Схема открывается окном поверх страницы: разворот вниз ломал ритм секции
+  // и уводил карточки на разную высоту.
+  document.querySelectorAll<HTMLButtonElement>('[data-spec-open]').forEach((btn) => {
+    const dialog = document.getElementById(`spec-${btn.dataset.specOpen}`) as HTMLDialogElement | null;
+    if (!dialog) return;
+
+    btn.addEventListener('click', () => dialog.showModal());
+
+    dialog.querySelector('[data-spec-close]')?.addEventListener('click', () => dialog.close());
+
+    // клик по затемнению вокруг окна тоже закрывает
+    dialog.addEventListener('click', (e) => {
+      const box = dialog.getBoundingClientRect();
+      const outside =
+        e.clientX < box.left || e.clientX > box.right || e.clientY < box.top || e.clientY > box.bottom;
+      if (outside) dialog.close();
+    });
+  });
+</script>
