@@ -1,0 +1,175 @@
+---
+import Section from './Section.astro';
+import { foulingLevels, fuels, cleaningRate } from '../content/site';
+
+const field =
+  'w-full rounded-xl border border-white/15 bg-abyss-950/60 px-4 py-3 text-foam-100 ' +
+  'transition-colors focus:border-signal-500 focus:outline-none';
+const label = 'mb-2 block text-sm font-medium text-foam-300';
+---
+
+<Section
+  id="calculator"
+  eyebrow="Сколько стоит обрастание"
+  title="Посчитайте, что вы теряете на топливе прямо сейчас"
+  lead="Обрастание увеличивает сопротивление корпуса, и двигатель добирает мощность топливом. Подставьте свои цифры и посмотрите, во что это обходится за год и что даёт очистка."
+>
+  <div
+    id="calc"
+    data-levels={JSON.stringify(foulingLevels)}
+    data-fuels={JSON.stringify(fuels)}
+    data-rate={cleaningRate}
+    class="grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12"
+  >
+    <form class="space-y-5" onsubmit="return false">
+      <div>
+        <label class={label} for="c-fouling">Степень обрастания сейчас</label>
+        <select id="c-fouling" class={field}>
+          {foulingLevels.map((l, i) => (
+            <option value={l.id} selected={i === 2}>{l.label}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label class={label} for="c-burn">Расход на ходу, т/сут</label>
+          <input id="c-burn" type="number" min="1" max="500" step="1" value="30" class={field} />
+        </div>
+        <div>
+          <label class={label} for="c-days">Ходовых суток в году</label>
+          <input id="c-days" type="number" min="1" max="365" step="1" value="200" class={field} />
+        </div>
+        <div>
+          <label class={label} for="c-fuel">Тип топлива</label>
+          <select id="c-fuel" class={field}>
+            {fuels.map((f) => <option value={f.id}>{f.label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label class={label} for="c-price">Цена топлива, ₽/т</label>
+          <input id="c-price" type="number" min="1000" max="500000" step="1000" value="60000" class={field} />
+        </div>
+      </div>
+
+      <div>
+        <label class={label} for="c-area">
+          Площадь подводной части, м²{' '}
+          <span class="font-normal text-foam-500">(необязательно)</span>
+        </label>
+        <input id="c-area" type="number" min="0" max="100000" step="100" placeholder="например, 6000" class={field} />
+      </div>
+    </form>
+
+    <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+      <p class="text-sm text-foam-500">Перерасход топлива из-за обрастания</p>
+      <p class="mt-1 text-[length:var(--text-display)] leading-none font-bold text-signal-500">
+        <span id="r-share">25</span>%
+      </p>
+
+      <dl class="mt-8 divide-y divide-white/10 border-y border-white/10 text-sm">
+        <div class="flex items-baseline justify-between gap-4 py-3">
+          <dt class="text-foam-500">Лишнее топливо</dt>
+          <dd class="text-right font-semibold tabular-nums"><span id="r-tday">7,4</span> т/сут</dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 py-3">
+          <dt class="text-foam-500">За год</dt>
+          <dd class="text-right font-semibold tabular-nums"><span id="r-tyear">1 489</span> т</dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 py-3">
+          <dt class="text-foam-500">В деньгах за год</dt>
+          <dd class="text-right font-semibold tabular-nums text-signal-500">
+            <span id="r-money">89,3 млн</span> ₽
+          </dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 py-3">
+          <dt class="text-foam-500">Снижение выбросов CO₂ за год</dt>
+          <dd class="text-right font-semibold tabular-nums"><span id="r-co2">4 693</span> т</dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 py-3">
+          <dt class="text-foam-500">Улучшение рейтинга CII</dt>
+          <dd class="text-right font-semibold tabular-nums">на <span id="r-cii">25</span>%</dd>
+        </div>
+        <div id="r-time-row" class="hidden items-baseline justify-between gap-4 py-3">
+          <dt class="text-foam-500">Очистка роботом займёт</dt>
+          <dd class="text-right font-semibold tabular-nums"><span id="r-time">3</span> ч</dd>
+        </div>
+      </dl>
+
+      <a
+        href="#request"
+        class="mt-7 block rounded-full bg-signal-500 px-7 py-3.5 text-center font-semibold text-abyss-950 transition-colors hover:bg-signal-400"
+      >
+        Посчитать точно по моему судну
+      </a>
+
+      <p class="mt-5 text-xs leading-relaxed text-foam-500">
+        Перерасход мощности взят по Schultz M.P. (2007), Biofouling 23(5): от 9% при тонкой слизи
+        до 84% при сплошном обрастании. Выбросы считаются по углеродным коэффициентам ИМО
+        (резолюция MEPC.364(79)), время очистки — по заявленной производительности
+        {' '}{cleaningRate} м²/ч. Оценка ориентировочная и не заменяет расчёт по судну.
+      </p>
+    </div>
+  </div>
+</Section>
+
+<script>
+  const root = document.getElementById('calc');
+
+  if (root) {
+    const levels = JSON.parse(root.dataset.levels || '[]') as { id: string; penalty: number }[];
+    const fuels = JSON.parse(root.dataset.fuels || '[]') as { id: string; cf: number }[];
+    const rate = Number(root.dataset.rate || 2000);
+
+    const $ = (id: string) => document.getElementById(id) as HTMLInputElement & HTMLSelectElement;
+    const out = (id: string) => document.getElementById(id) as HTMLElement;
+
+    const nf = (v: number, digits = 0) =>
+      v.toLocaleString('ru-RU', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+
+    const money = (rub: number) => {
+      if (rub >= 1e9) return `${nf(rub / 1e9, 1)} млрд`;
+      if (rub >= 1e6) return `${nf(rub / 1e6, 1)} млн`;
+      if (rub >= 1e3) return `${nf(rub / 1e3)} тыс.`;
+      return nf(rub);
+    };
+
+    const recalc = () => {
+      const penalty = levels.find((l) => l.id === $('c-fouling').value)?.penalty ?? 0.33;
+      const cf = fuels.find((f) => f.id === $('c-fuel').value)?.cf ?? 3.151;
+      const burn = Math.max(0, Number($('c-burn').value) || 0);
+      const days = Math.max(0, Number($('c-days').value) || 0);
+      const price = Math.max(0, Number($('c-price').value) || 0);
+      const area = Math.max(0, Number($('c-area').value) || 0);
+
+      // Введённый расход — уже с обрастанием. Лишняя доля от него: p / (1 + p).
+      const share = penalty / (1 + penalty);
+      const perDay = burn * share;
+      const perYear = perDay * days;
+
+      out('r-share').textContent = nf(share * 100);
+      out('r-tday').textContent = nf(perDay, 1);
+      out('r-tyear').textContent = nf(perYear);
+      out('r-money').textContent = money(perYear * price);
+      out('r-co2').textContent = nf(perYear * cf);
+      // CII — это CO2 на транспортную работу, поэтому улучшается ровно на долю снятого топлива.
+      out('r-cii').textContent = nf(share * 100);
+
+      const row = out('r-time-row');
+      if (area > 0) {
+        row.classList.remove('hidden');
+        row.classList.add('flex');
+        out('r-time').textContent = nf(area / rate, 1);
+      } else {
+        row.classList.add('hidden');
+        row.classList.remove('flex');
+      }
+    };
+
+    root.querySelectorAll('input, select').forEach((el) => {
+      el.addEventListener('input', recalc);
+      el.addEventListener('change', recalc);
+    });
+    recalc();
+  }
+</script>

@@ -1,0 +1,141 @@
+---
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+import { company, requisites } from '../content/site';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://hullbot.group').href;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content={company.legalName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/og.jpg', Astro.site ?? 'https://hullbot.group').href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Подводный робот очищает корпус судна кавитационной струёй" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={new URL('/og.jpg', Astro.site ?? 'https://hullbot.group').href} />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#021c33" />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'Organization',
+            '@id': 'https://hullbot.group/#org',
+            name: company.legalName,
+            alternateName: [company.shortName, 'ХаллБот Групп', 'HullBot Group'],
+            description: company.tagline,
+            url: 'https://hullbot.group/',
+            logo: 'https://hullbot.group/logo.png',
+            image: 'https://hullbot.group/og.jpg',
+            telephone: company.phone,
+            email: company.emails[1],
+            taxID: requisites.inn,
+            identifier: [
+              { '@type': 'PropertyValue', name: 'ОГРН', value: requisites.ogrn },
+              { '@type': 'PropertyValue', name: 'ИНН', value: requisites.inn },
+              { '@type': 'PropertyValue', name: 'КПП', value: requisites.kpp },
+            ],
+            address: [
+              {
+                '@type': 'PostalAddress',
+                streetAddress: 'ул. Марата, д. 57, лит. А, 6-Н',
+                addressLocality: 'Санкт-Петербург',
+                postalCode: '191119',
+                addressCountry: 'RU',
+              },
+              { '@type': 'PostalAddress', addressLocality: 'Владивосток', addressCountry: 'RU' },
+            ],
+            areaServed: { '@type': 'Country', name: 'Россия' },
+            contactPoint: {
+              '@type': 'ContactPoint',
+              telephone: company.phone,
+              email: company.emails[1],
+              contactType: 'sales',
+              availableLanguage: ['ru'],
+            },
+            knowsAbout: [
+              'кавитационная очистка корпусов судов',
+              'подводная инспекция судов',
+              'очистка гидротехнических сооружений',
+              'снижение расхода топлива за счёт очистки корпуса',
+              'биообрастание подводной части судна',
+            ],
+          },
+          {
+            '@type': 'Service',
+            '@id': 'https://hullbot.group/#service',
+            name: 'Роботизированная кавитационная очистка подводной части судов и гидросооружений',
+            serviceType: 'Подводная очистка и инспекция',
+            provider: { '@id': 'https://hullbot.group/#org' },
+            areaServed: { '@type': 'Country', name: 'Россия' },
+            description:
+              'Очистка корпуса на плаву роботом без докования и водолазов. Судно длиной 180 метров ' +
+              'обрабатывается за 12 часов, экономия топлива после очистки достигает 30%, ' +
+              'лакокрасочное покрытие не повреждается.',
+            hasOfferCatalog: {
+              '@type': 'OfferCatalog',
+              name: 'Услуги',
+              itemListElement: company.services.map((s) => ({
+                '@type': 'Offer',
+                itemOffered: { '@type': 'Service', name: s },
+              })),
+            },
+          },
+          {
+            '@type': 'WebSite',
+            '@id': 'https://hullbot.group/#website',
+            url: 'https://hullbot.group/',
+            name: company.legalName,
+            inLanguage: 'ru-RU',
+            publisher: { '@id': 'https://hullbot.group/#org' },
+          },
+          {
+            '@type': 'WebPage',
+            url: canonical,
+            name: title,
+            description,
+            inLanguage: 'ru-RU',
+            isPartOf: { '@id': 'https://hullbot.group/#website' },
+          },
+        ],
+      })}
+    />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-signal-500 focus:px-4 focus:py-2 focus:font-semibold focus:text-abyss-950"
+    >
+      Перейти к содержимому
+    </a>
+    <slot />
+  </body>
+</html>

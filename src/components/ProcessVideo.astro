@@ -1,0 +1,30 @@
+---
+import Section from './Section.astro';
+import { media } from '../media';
+---
+
+<Section
+  id="video"
+  eyebrow="Съёмка с объекта"
+  title="Как это выглядит на самом деле"
+  lead="Не визуализация, а рабочая смена на корпусе судна: кавитационная струя, картинка с камер инспекционного робота на посту оператора и работа в тёмное время суток."
+>
+  <figure class="mx-auto max-w-md">
+    <div class="overflow-hidden rounded-3xl border border-white/10 bg-abyss-900 shadow-2xl shadow-abyss-950/60">
+      <video
+        class="aspect-[1080/1920] w-full object-cover"
+        controls
+        muted
+        playsinline
+        preload="none"
+        poster="/process-poster.jpg"
+      >
+        <source src={media("process.mp4")} type="video/mp4" />
+        Ваш браузер не умеет проигрывать видео.
+      </video>
+    </div>
+    <figcaption class="mt-4 text-center text-sm text-foam-500">
+      Полная запись, 19 секунд. Загружается только по нажатию.
+    </figcaption>
+  </figure>
+</Section>

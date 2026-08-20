@@ -1,0 +1,57 @@
+---
+import { company, requisites } from '../content/site';
+
+const hasRequisites = Boolean(requisites.ogrn && requisites.inn);
+---
+
+<footer id="contacts" class="scroll-mt-24 border-t border-white/10">
+  <div class="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
+    <div class="sm:col-span-2 lg:col-span-1">
+      <div class="flex items-center gap-3">
+        <img src="/logo.png" alt="" width="36" height="36" class="h-9 w-9" />
+        <span class="font-semibold">{company.shortName}</span>
+      </div>
+      <p class="mt-4 max-w-xs text-sm leading-relaxed text-foam-500">{company.tagline}</p>
+      {hasRequisites && (
+        <p class="mt-3 text-xs leading-relaxed text-foam-500">
+          {company.legalName}<br />
+          ОГРН {requisites.ogrn}<br />
+          ИНН {requisites.inn} · КПП {requisites.kpp}
+        </p>
+      )}
+    </div>
+
+    <div>
+      <h2 class="text-sm font-semibold tracking-wide text-foam-100">Контакты</h2>
+      <ul class="mt-4 space-y-2 text-sm text-foam-300">
+        <li><a class="hover:text-signal-500" href={`tel:${company.phoneHref}`}>{company.phone}</a></li>
+        {company.emails.map((e) => (
+          <li><a class="hover:text-signal-500" href={`mailto:${e}`}>{e}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-semibold tracking-wide text-foam-100">Услуги</h2>
+      <ul class="mt-4 space-y-2 text-sm text-foam-300">
+        {company.services.map((s) => <li>{s}</li>)}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-semibold tracking-wide text-foam-100">Офисы</h2>
+      <ul class="mt-4 space-y-2 text-sm leading-relaxed text-foam-300">
+        {company.offices.map((o) => <li>{o}</li>)}
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-xs text-foam-500 lg:px-8">
+      <p>© {new Date().getFullYear()} {company.legalName}</p>
+      <a href="/privacy/" class="transition-colors hover:text-signal-500">
+        Политика обработки персональных данных
+      </a>
+    </div>
+  </div>
+</footer>

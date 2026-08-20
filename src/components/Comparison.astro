@@ -1,0 +1,77 @@
+---
+import Section from './Section.astro';
+
+const cols = ['Робот', 'Водолазы', 'Докование'];
+
+const rows = [
+  {
+    k: 'Срок по судну 180 м',
+    v: ['12 часов', 'в 5–6 раз дольше', 'сутки и более, не считая ожидания дока'],
+  },
+  {
+    k: 'Простой судна',
+    v: ['нет, работаем на плаву', 'нет, но борт занят дольше', 'судно выводится из эксплуатации'],
+  },
+  {
+    k: 'Совмещение с грузовыми операциями',
+    v: ['да, идём параллельно', 'ограничено', 'исключено'],
+  },
+  {
+    k: 'Планирование',
+    v: ['по факту захода в порт', 'по факту захода в порт', 'место в доке бронируется заранее'],
+  },
+  {
+    k: 'Люди под водой',
+    v: ['нет', 'да, водолазная смена', 'нет'],
+  },
+  {
+    k: 'Лакокрасочное покрытие',
+    v: ['не нарушается', 'зависит от инструмента и оператора', 'снимается и наносится заново'],
+  },
+  {
+    k: 'Отчёт «до/после»',
+    v: ['входит, с видеофиксацией', 'по договорённости', 'акт дока'],
+  },
+];
+
+const tone = (i: number) => (i === 0 ? 'text-foam-100 font-semibold' : 'text-foam-500');
+---
+
+<Section
+  id="comparison"
+  eyebrow="Сравнение"
+  title="Три способа снять обрастание"
+  lead="Судовладелец выбирает не между подрядчиками, а между способами. Вот чем робот отличается от привычных."
+>
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[42rem] border-collapse text-sm">
+      <caption class="sr-only">Сравнение роботизированной очистки с водолазной и докованием</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="w-1/4 pb-4 text-left font-medium text-foam-500">Параметр</th>
+          {cols.map((c, i) => (
+            <th
+              scope="col"
+              class:list={[
+                'w-1/4 pb-4 text-left text-base font-semibold',
+                i === 0 ? 'text-signal-500' : 'text-foam-300',
+              ]}
+            >
+              {c}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/10 border-t border-white/10">
+        {rows.map((r) => (
+          <tr>
+            <th scope="row" class="py-4 pr-4 text-left align-top font-normal text-foam-500">{r.k}</th>
+            {r.v.map((cell, i) => (
+              <td class:list={['py-4 pr-4 align-top leading-relaxed', tone(i)]}>{cell}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Section>

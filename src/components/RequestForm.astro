@@ -1,0 +1,177 @@
+---
+import { company } from '../content/site';
+
+// Обработчик — Cloud Function в Яндекс Облаке, данные не покидают РФ.
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
+
+const objectTypes = ['Судно', 'Спецтехника', 'Платформа', 'Мост', 'Пирс', 'Другое'];
+const field =
+  'w-full rounded-xl border border-white/15 bg-abyss-950/60 px-4 py-3 text-foam-100 ' +
+  'placeholder:text-foam-500 transition-colors focus:border-signal-500 focus:outline-none';
+const label = 'mb-2 block text-sm font-medium text-foam-300';
+---
+
+<section id="request" class="scroll-mt-24 border-y border-white/10 bg-abyss-900">
+  <div class="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-2 lg:gap-20 lg:px-8 lg:py-28">
+    <div>
+      <p class="mb-4 flex items-center gap-3 text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">
+        <span class="h-px w-8 bg-signal-500"></span>
+        Расчёт стоимости и срока
+      </p>
+      <h2 class="text-[length:var(--text-display)] leading-tight font-bold tracking-tight text-balance">
+        Опишите объект, вернёмся со сроком и ценой
+      </h2>
+      <p class="mt-5 text-lg leading-relaxed text-foam-300 text-pretty">
+        Чем точнее данные об объекте, тем точнее расчёт. Если чего-то не знаете, оставьте поле
+        пустым, уточним при разговоре.
+      </p>
+
+      <p class="mt-6 inline-flex items-center gap-2.5 rounded-full border border-signal-500/30 bg-signal-500/10 px-4 py-2 text-sm font-medium text-signal-400">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <circle cx="8" cy="8" r="6.25" />
+          <path d="M8 4.5V8l2.5 1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Отвечаем в течение рабочего дня
+      </p>
+
+    </div>
+
+    <form
+      id="request-form"
+      data-endpoint={endpoint}
+      data-phone={company.phone}
+      novalidate
+      class="space-y-5"
+    >
+      <!-- ловушка для ботов -->
+      <div class="absolute -left-[9999px]" aria-hidden="true">
+        <label>Компания<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label class={label} for="f-type">Тип объекта</label>
+          <select id="f-type" name="type" class={field}>
+            {objectTypes.map((t) => <option value={t}>{t}</option>)}
+          </select>
+        </div>
+        <div>
+          <label class={label} for="f-size">Размер</label>
+          <input id="f-size" name="size" type="text" class={field} placeholder="длина 180 м или 4200 м²" />
+        </div>
+        <div>
+          <label class={label} for="f-place">Порт или место стоянки</label>
+          <input id="f-place" name="place" type="text" class={field} placeholder="Новороссийск, причал 12" />
+        </div>
+        <div>
+          <label class={label} for="f-when">Желаемые сроки</label>
+          <input id="f-when" name="when" type="text" class={field} placeholder="вторая половина мая" />
+        </div>
+      </div>
+
+      <hr class="border-white/10" />
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label class={label} for="f-name">Имя <span class="text-signal-500">*</span></label>
+          <input id="f-name" name="name" type="text" required class={field} placeholder="Как к вам обращаться" />
+        </div>
+        <div>
+          <label class={label} for="f-phone">Телефон <span class="text-signal-500">*</span></label>
+          <input id="f-phone" name="phone" type="tel" required class={field} placeholder="+7 900 000-00-00" />
+        </div>
+      </div>
+
+      <div>
+        <label class={label} for="f-email">Почта</label>
+        <input id="f-email" name="email" type="email" class={field} placeholder="name@company.ru" />
+      </div>
+
+      <div>
+        <label class={label} for="f-note">Что важно знать</label>
+        <textarea id="f-note" name="note" rows="3" class={field} placeholder="Степень обрастания, предыдущая очистка, ограничения по времени"></textarea>
+      </div>
+
+      <label class="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-foam-300">
+        <input
+          id="f-consent"
+          name="consent"
+          type="checkbox"
+          required
+          class="mt-0.5 h-5 w-5 shrink-0 cursor-pointer rounded border-white/25 bg-abyss-950 accent-signal-500"
+        />
+        <span>
+          Даю согласие на обработку персональных данных в соответствии с{' '}
+          <a href="/privacy/" class="text-signal-500 underline underline-offset-2 hover:text-signal-400">
+            политикой обработки персональных данных</a>.
+        </span>
+      </label>
+
+      <button
+        type="submit"
+        class="w-full rounded-full bg-signal-500 px-7 py-4 font-semibold text-abyss-950 transition-colors hover:bg-signal-400 disabled:opacity-60"
+      >
+        Отправить запрос
+      </button>
+
+      <p id="form-status" role="status" aria-live="polite" class="hidden rounded-xl px-4 py-3 text-sm"></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('request-form') as HTMLFormElement | null;
+  const status = document.getElementById('form-status');
+
+  if (form && status) {
+    const button = form.querySelector('button[type=submit]') as HTMLButtonElement;
+    const endpoint = form.dataset.endpoint || '';
+    const phone = form.dataset.phone || '';
+
+    const say = (kind: 'ok' | 'err', text: string) => {
+      status.className =
+        kind === 'ok'
+          ? 'rounded-xl bg-signal-500/15 px-4 py-3 text-sm text-signal-400'
+          : 'rounded-xl bg-red-500/15 px-4 py-3 text-sm text-red-300';
+      status.textContent = text;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const consent = form.querySelector<HTMLInputElement>('#f-consent');
+      if (!form.checkValidity() || !consent?.checked) {
+        say('err', 'Заполните имя и телефон и подтвердите согласие на обработку данных.');
+        form.reportValidity();
+        return;
+      }
+      if (!endpoint) {
+        say('err', `Форма ещё не подключена. Позвоните нам: ${phone}`);
+        return;
+      }
+
+      const payload = Object.fromEntries(new FormData(form).entries());
+      payload.consent = true as never;
+
+      button.disabled = true;
+      const original = button.textContent;
+      button.textContent = 'Отправляем…';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        say('ok', 'Заявка ушла. Свяжемся с вами при первой возможности.');
+      } catch {
+        say('err', `Не удалось отправить. Позвоните нам: ${phone} или напишите на info@hullbot.group`);
+      } finally {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    });
+  }
+</script>

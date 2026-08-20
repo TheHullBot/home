@@ -1,0 +1,103 @@
+'use strict';
+
+const nodemailer = require('nodemailer');
+
+const {
+  SMTP_HOST,
+  SMTP_PORT = '465',
+  SMTP_USER,
+  SMTP_PASS,
+  MAIL_TO,
+  MAIL_FROM,
+  ALLOWED_ORIGIN = 'https://hullbot.group',
+} = process.env;
+
+const FIELDS = [
+  ['type', 'Тип объекта'],
+  ['size', 'Размер'],
+  ['place', 'Порт или место стоянки'],
+  ['when', 'Желаемые сроки'],
+  ['name', 'Имя'],
+  ['phone', 'Телефон'],
+  ['email', 'Почта'],
+  ['note', 'Комментарий'],
+];
+
+const cors = {
+  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Max-Age': '86400',
+};
+
+const reply = (statusCode, body) => ({
+  statusCode,
+  headers: { 'Content-Type': 'application/json; charset=utf-8', ...cors },
+  body: JSON.stringify(body),
+});
+
+const clean = (v) => String(v ?? '').replace(/[\r\n]+/g, ' ').trim().slice(0, 2000);
+
+const escapeHtml = (v) =>
+  clean(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+module.exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: cors, body: '' };
+  if (event.httpMethod !== 'POST') return reply(405, { ok: false, error: 'method_not_allowed' });
+
+  let data;
+  try {
+    const raw = event.isBase64Encoded
+      ? Buffer.from(event.body || '', 'base64').toString('utf8')
+      : event.body || '';
+    data = JSON.parse(raw);
+  } catch {
+    return reply(400, { ok: false, error: 'bad_json' });
+  }
+
+  // Ловушка для ботов: поле скрыто от людей, заполнить его может только скрипт.
+  if (clean(data.company)) return reply(200, { ok: true });
+
+  if (!clean(data.name) || !clean(data.phone)) {
+    return reply(422, { ok: false, error: 'name_and_phone_required' });
+  }
+  if (data.consent !== true && data.consent !== 'on') {
+    return reply(422, { ok: false, error: 'consent_required' });
+  }
+
+  const rows = FIELDS.filter(([k]) => clean(data[k])).map(
+    ([k, label]) =>
+      `<tr><td style="padding:6px 14px 6px 0;color:#6f8ba3;vertical-align:top">${label}</td>` +
+      `<td style="padding:6px 0;color:#0b1b2b"><strong>${escapeHtml(data[k])}</strong></td></tr>`,
+  );
+
+  const transport = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: Number(SMTP_PORT),
+    secure: Number(SMTP_PORT) === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+  });
+
+  try {
+    await transport.sendMail({
+      from: MAIL_FROM,
+      to: MAIL_TO,
+      replyTo: clean(data.email) || undefined,
+      subject: `Заявка с сайта: ${clean(data.type) || 'объект'} — ${clean(data.name)}`,
+      text: FIELDS.filter(([k]) => clean(data[k]))
+        .map(([k, label]) => `${label}: ${clean(data[k])}`)
+        .join('\n'),
+      html:
+        `<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px">` +
+        `<p style="margin:0 0 14px;color:#0b1b2b">Новая заявка с hullbot.group</p>` +
+        `<table style="border-collapse:collapse">${rows.join('')}</table>` +
+        `<p style="margin:18px 0 0;font-size:12px;color:#6f8ba3">` +
+        `Согласие на обработку персональных данных получено при отправке формы.</p></div>`,
+    });
+  } catch (err) {
+    console.error('sendMail failed:', err && err.message);
+    return reply(502, { ok: false, error: 'mail_failed' });
+  }
+
+  return reply(200, { ok: true });
+};

@@ -1,0 +1,139 @@
+---
+import { company } from '../content/site';
+
+// Меню ведёт к блокам, которые убеждают, а не перечисляет всё подряд.
+// Только то, что решает: чем делаем, чем докажем, сколько сэкономим, как связаться.
+// short — для шапки, label — для мобильного меню, где место есть.
+const links = [
+  { href: '#robots', label: 'Роботы', short: 'Роботы' },
+  { href: '#before-after', label: 'До и после', short: 'До и после' },
+  { href: '#calculator', label: 'Расчёт экономии', short: 'Экономия' },
+  { href: '#contacts', label: 'Контакты', short: 'Контакты' },
+];
+---
+
+<header class="fixed inset-x-0 top-0 z-40 border-b border-white/5 bg-abyss-950/70 backdrop-blur-lg">
+  <div class="mx-auto flex max-w-7xl items-center gap-6 px-5 py-3.5 lg:px-8">
+    <a href="/" class="flex shrink-0 items-center gap-3">
+      <img src="/logo.png" alt="" width="36" height="36" class="h-9 w-9" />
+      <span class="text-sm leading-tight font-semibold tracking-tight sm:text-base">
+        ХаллБот <span class="text-foam-500">Групп</span>
+      </span>
+    </a>
+
+    <nav aria-label="Основная навигация" class="ml-auto hidden lg:block">
+      <ul class="flex items-center gap-6 text-sm text-foam-300">
+        {links.map((l) => (
+          <li>
+            <a href={l.href} class="whitespace-nowrap transition-colors hover:text-white">{l.short}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <a
+      href={`tel:${company.phoneHref}`}
+      class="ml-auto hidden text-sm font-medium whitespace-nowrap text-foam-300 transition-colors hover:text-white lg:block lg:ml-0"
+    >
+      {company.phone}
+    </a>
+
+    <a
+      href="#request"
+      class="ml-auto hidden shrink-0 rounded-full bg-signal-500 px-5 py-2 text-sm font-semibold text-abyss-950 transition-colors hover:bg-signal-400 sm:block lg:ml-0"
+    >
+      Рассчитать объект
+    </a>
+
+    <button
+      id="menu-toggle"
+      type="button"
+      class="ml-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foam-100 transition-colors hover:bg-white/10 sm:ml-0 lg:hidden"
+      aria-label="Открыть меню"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path class="origin-center transition-transform duration-200" data-bar="top" d="M3 6h16" stroke-linecap="round" />
+        <path class="transition-opacity duration-200" data-bar="mid" d="M3 11h16" stroke-linecap="round" />
+        <path class="origin-center transition-transform duration-200" data-bar="bot" d="M3 16h16" stroke-linecap="round" />
+      </svg>
+    </button>
+  </div>
+
+  <div
+    id="mobile-menu"
+    hidden
+    class="border-t border-white/10 bg-abyss-950/95 backdrop-blur-lg lg:hidden"
+  >
+    <nav aria-label="Меню" class="mx-auto max-w-7xl px-5 py-4">
+      <ul class="divide-y divide-white/5">
+        {links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="block py-3.5 text-base text-foam-100 transition-colors hover:text-signal-500"
+              data-menu-link
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="mt-5 flex flex-col gap-3">
+        <a
+          href="#request"
+          data-menu-link
+          class="rounded-full bg-signal-500 px-6 py-3 text-center font-semibold text-abyss-950"
+        >
+          Рассчитать объект
+        </a>
+        <a
+          href={`tel:${company.phoneHref}`}
+          class="rounded-full border border-white/20 px-6 py-3 text-center font-semibold text-foam-100"
+        >
+          {company.phone}
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  if (toggle && menu) {
+    const top = toggle.querySelector('[data-bar=top]') as SVGPathElement;
+    const mid = toggle.querySelector('[data-bar=mid]') as SVGPathElement;
+    const bot = toggle.querySelector('[data-bar=bot]') as SVGPathElement;
+
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+      top.style.transform = open ? 'translateY(5px) rotate(45deg)' : '';
+      bot.style.transform = open ? 'translateY(-5px) rotate(-45deg)' : '';
+      mid.style.opacity = open ? '0' : '1';
+    };
+
+    toggle.addEventListener('click', () => setOpen(menu.hidden));
+
+    // клик по пункту закрывает меню, иначе оно перекрывает секцию, к которой ведёт
+    menu.querySelectorAll('[data-menu-link]').forEach((a) =>
+      a.addEventListener('click', () => setOpen(false)),
+    );
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.hidden) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // при переходе на широкий экран меню не должно остаться открытым
+    const wide = window.matchMedia('(min-width: 1024px)');
+    wide.addEventListener('change', (e) => e.matches && setOpen(false));
+  }
+</script>

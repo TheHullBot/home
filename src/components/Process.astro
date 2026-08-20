@@ -1,0 +1,21 @@
+---
+import Section from './Section.astro';
+import { process } from '../content/site';
+---
+
+<Section
+  id="process"
+  eyebrow="Как работаем"
+  title="Три шага от заявки до акта"
+  lead="Работа идёт на плаву: судно не нужно ставить в док, а бригада может выйти прямо во время погрузки и выгрузки."
+>
+  <ol class="grid gap-px overflow-hidden rounded-2xl bg-white/10 md:grid-cols-3">
+    {process.map((s) => (
+      <li class="relative bg-abyss-900 p-8">
+        <span class="text-5xl font-bold text-abyss-700 tabular-nums">{s.n}</span>
+        <h3 class="mt-4 text-xl font-semibold">{s.title}</h3>
+        <p class="mt-2.5 leading-relaxed text-foam-300">{s.text}</p>
+      </li>
+    ))}
+  </ol>
+</Section>
