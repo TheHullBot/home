@@ -95,8 +95,20 @@ import { media } from '../media';
         { once: true },
       );
 
+      const start = () => {
+        if (video.paused) video.play().catch(() => {});
+      };
+
       video.load();
-      video.play().catch(() => {});
+      start();
+      video.addEventListener('canplay', start, { once: true });
+
+      // Режим энергосбережения на iPhone и похожие режимы на Android запрещают
+      // автозапуск: play() отклоняется, и на первом экране остаётся постер.
+      // После первого касания или прокрутки запрет снимается, пробуем ещё раз.
+      ['pointerdown', 'touchstart', 'scroll'].forEach((type) =>
+        window.addEventListener(type, start, { once: true, passive: true }),
+      );
     }
   }
 </script>
