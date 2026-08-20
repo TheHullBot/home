@@ -14,9 +14,14 @@ const base = (match ? match[0] : '').replace(/\/+$/, '');
 // К адресу дописываем отпечаток содержимого файла. ImageKit кеширует
 // на год, и после замены видео по прежнему адресу ещё долго приезжает
 // старая версия. Отпечаток меняется вместе с файлом, и вопрос снимается.
+// В версию входит и размер файла: если по адресу с прежним отпечатком
+// успели закешировать не тот файл, достаточно сменить формат версии,
+// и адрес станет новым.
 const stamp = (file: string) => {
   try {
-    return createHash('sha1').update(readFileSync(`public/${file}`)).digest('hex').slice(0, 10);
+    const data = readFileSync(`public/${file}`);
+    const hash = createHash('sha1').update(data).digest('hex').slice(0, 8);
+    return `${data.length}-${hash}`;
   } catch {
     return '';
   }
