@@ -1,7 +1,9 @@
 ---
 import { company, workScope } from '../content/site';
 
-// Обработчик — Cloud Function в Яндекс Облаке, данные не покидают РФ.
+// Пока обработчика нет, форма собирает письмо в почтовой программе посетителя:
+// данные не проходят ни через один сервер. Как только появится адрес обработчика,
+// он подставится сюда, а письмо останется запасным путём.
 const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
 
 const objectTypes = ['Судно', 'Спецтехника', 'Платформа', 'Мост', 'Пирс', 'Другое'];
@@ -41,6 +43,7 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
       data-endpoint={endpoint}
       data-phone={company.phone}
       data-mail="info@hullbot.group"
+      data-tel={company.phoneHref}
       novalidate
       class="space-y-5"
     >
@@ -184,6 +187,7 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
     const button = form.querySelector('button[type=submit]') as HTMLButtonElement;
     const endpoint = form.dataset.endpoint || '';
     const phone = form.dataset.phone || '';
+    const tel = form.dataset.tel || '';
     const mail = form.dataset.mail || '';
 
     // Подписи полей повторяют серверный обработчик: письмо, собранное здесь,
@@ -229,12 +233,21 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
     const clearBad = () =>
       form.querySelectorAll('.border-red-400\\/70').forEach((el) => el.classList.remove('border-red-400/70'));
 
-    const say = (kind: 'ok' | 'err', text: string) => {
+    // withPhone дописывает номер ссылкой: с телефона по нему звонят в одно касание,
+    // а простой текст пришлось бы выделять и копировать
+    const say = (kind: 'ok' | 'err', text: string, withPhone = false) => {
       status.className =
         kind === 'ok'
           ? 'rounded-xl bg-signal-500/15 px-4 py-3 text-sm text-signal-400'
           : 'rounded-xl bg-red-500/15 px-4 py-3 text-sm text-red-300';
       status.textContent = text;
+      if (withPhone && phone) {
+        const a = document.createElement('a');
+        a.href = `tel:${tel}`;
+        a.textContent = phone;
+        a.className = 'font-semibold whitespace-nowrap underline underline-offset-2 hover:text-white';
+        status.append(' ', a);
+      }
     };
 
     form.addEventListener('submit', async (e) => {
@@ -272,7 +285,11 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
 
       if (!endpoint) {
         mailFallback(payload);
-        say('ok', `Заявка собрана в письмо, осталось нажать «Отправить» в почте. Если письмо не открылось, позвоните: ${phone}`);
+        say(
+          'ok',
+          'Заявка собрана в письмо, осталось нажать «Отправить» в почте. Если письмо не открылось, позвоните:',
+          true,
+        );
         return;
       }
 
@@ -291,7 +308,7 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
         say('ok', 'Заявка ушла. Свяжемся с вами при первой возможности.');
       } catch {
         mailFallback(payload);
-        say('err', `Отправить с сайта не вышло, заявка собрана в письмо. Или позвоните: ${phone}`);
+        say('err', 'Отправить с сайта не вышло, заявка собрана в письмо. Или позвоните:', true);
       } finally {
         button.disabled = false;
         button.textContent = original;
