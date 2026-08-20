@@ -2,6 +2,7 @@
 import '@fontsource-variable/inter';
 import '../styles/global.css';
 import { company, requisites, contentUpdated, foundedYear } from '../content/site';
+import { asset } from '../media';
 
 interface Props {
   title: string;
@@ -27,12 +28,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://hullbot.gro
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL('/og.jpg', Astro.site ?? 'https://hullbot.group').href} />
+    <meta property="og:image" content={new URL(asset('og.jpg'), Astro.site ?? 'https://hullbot.group').href} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Подводный робот очищает корпус судна кавитационной струёй" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content={new URL('/og.jpg', Astro.site ?? 'https://hullbot.group').href} />
+    <meta name="twitter:image" content={new URL(asset('og.jpg'), Astro.site ?? 'https://hullbot.group').href} />
 
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -60,7 +61,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://hullbot.gro
             description: company.tagline,
             url: 'https://hullbot.group/',
             logo: 'https://hullbot.group/logo.png',
-            image: 'https://hullbot.group/og.jpg',
+            image: new URL(asset('og.jpg'), Astro.site ?? 'https://hullbot.group').href,
             telephone: company.phone,
             email: company.emails[1],
             taxID: requisites.inn,
@@ -134,7 +135,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://hullbot.gro
             about: { '@id': 'https://hullbot.group/#service' },
             dateModified: contentUpdated,
             datePublished: contentUpdated,
-            primaryImageOfPage: 'https://hullbot.group/og.jpg',
+            primaryImageOfPage: new URL(asset('og.jpg'), Astro.site ?? 'https://hullbot.group').href,
             speakable: {
               '@type': 'SpeakableSpecification',
               cssSelector: ['h1', '[data-speakable]'],

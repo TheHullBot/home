@@ -35,3 +35,11 @@ export const media = (file: string) => {
   const v = stamp(file);
   return `${base}/${file}?tr=orig-true${v ? `&v=${v}` : ''}`;
 };
+
+// Файлы, которые лежат рядом с сайтом. Отпечаток нужен соцсетям: они
+// кешируют картинку превью надолго, и без смены адреса будут показывать
+// прежнюю ещё долго после замены.
+export const asset = (file: string) => {
+  const v = stamp(file);
+  return `/${file}${v ? `?v=${v}` : ''}`;
+};

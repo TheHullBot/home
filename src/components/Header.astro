@@ -61,6 +61,15 @@ const links = [
     </button>
   </div>
 
+  {/* Полоса прочитанного: показывает, сколько страницы позади. Страница
+      длинная, и без неё непонятно, докуда докрутил. */}
+  <div
+    id="scroll-progress"
+    class="absolute inset-x-0 bottom-0 h-[3px] origin-left bg-signal-500 will-change-transform"
+    style="transform: scaleX(0)"
+    aria-hidden="true"
+  ></div>
+
   <div
     id="mobile-menu"
     hidden
@@ -101,6 +110,27 @@ const links = [
 </header>
 
 <script>
+  // Полоса прочитанного под шапкой
+  const progress = document.getElementById('scroll-progress');
+  if (progress) {
+    let ticking = false;
+    const draw = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const done = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      progress.style.transform = `scaleX(${done})`;
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(draw);
+      }
+    };
+    draw();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+  }
+
   const toggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('mobile-menu');
 
