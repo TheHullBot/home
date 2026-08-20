@@ -1,7 +1,7 @@
 ---
 import '@fontsource-variable/inter';
 import '../styles/global.css';
-import { company, requisites } from '../content/site';
+import { company, requisites, contentUpdated, foundedYear } from '../content/site';
 
 interface Props {
   title: string;
@@ -40,6 +40,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://hullbot.gro
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#021c33" />
+    {import.meta.env.PUBLIC_YANDEX_VERIFICATION && (
+      <meta name="yandex-verification" content={import.meta.env.PUBLIC_YANDEX_VERIFICATION} />
+    )}
+    {import.meta.env.PUBLIC_GOOGLE_VERIFICATION && (
+      <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_VERIFICATION} />
+    )}
 
     <script
       type="application/ld+json"
@@ -74,6 +80,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://hullbot.gro
               { '@type': 'PostalAddress', addressLocality: 'Владивосток', addressCountry: 'RU' },
             ],
             areaServed: { '@type': 'Country', name: 'Россия' },
+            foundingDate: foundedYear,
             contactPoint: {
               '@type': 'ContactPoint',
               telephone: company.phone,
@@ -124,6 +131,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://hullbot.gro
             description,
             inLanguage: 'ru-RU',
             isPartOf: { '@id': 'https://hullbot.group/#website' },
+            about: { '@id': 'https://hullbot.group/#service' },
+            dateModified: contentUpdated,
+            datePublished: contentUpdated,
+            primaryImageOfPage: 'https://hullbot.group/og.jpg',
+            speakable: {
+              '@type': 'SpeakableSpecification',
+              cssSelector: ['h1', '[data-speakable]'],
+            },
           },
         ],
       })}

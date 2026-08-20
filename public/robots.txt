@@ -63,3 +63,7 @@ User-agent: CCBot
 Allow: /
 
 Sitemap: https://hullbot.group/sitemap-index.xml
+
+# Развёрнутая выжимка для языковых моделей
+# https://hullbot.group/llms.txt
+# https://hullbot.group/llms-full.txt

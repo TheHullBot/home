@@ -30,6 +30,8 @@ jobs:
           PUBLIC_FORM_ENDPOINT: ${{ secrets.PUBLIC_FORM_ENDPOINT }}
           # откуда раздаются видео; пусто — из репозитория
           PUBLIC_MEDIA_BASE: ${{ vars.PUBLIC_MEDIA_BASE }}
+          PUBLIC_YANDEX_VERIFICATION: ${{ vars.PUBLIC_YANDEX_VERIFICATION }}
+          PUBLIC_GOOGLE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_VERIFICATION }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
