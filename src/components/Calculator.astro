@@ -14,12 +14,45 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
   title="Посчитайте, что вы теряете на топливе прямо сейчас"
   lead="Обрастание увеличивает сопротивление корпуса, и двигатель добирает мощность топливом. Подставьте свои цифры и посмотрите, во что это обходится за год и что даёт очистка."
 >
+  <button
+    type="button"
+    data-calc-open
+    class="inline-flex items-center gap-2.5 rounded-full bg-signal-500 px-7 py-3.5 font-semibold
+           text-abyss-950 transition-colors hover:bg-signal-400"
+  >
+    <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+      <rect x="2.5" y="1.5" width="13" height="15" rx="2" />
+      <path d="M5.5 5.5h7M5.5 9.5h2M8.5 9.5h2M11.5 9.5h2M5.5 12.5h2M8.5 12.5h2M11.5 12.5h2" stroke-linecap="round" />
+    </svg>
+    Открыть калькулятор
+  </button>
+
+  <dialog
+    id="calc-dialog"
+    class="m-auto max-h-[92vh] max-w-[min(94vw,72rem)] rounded-2xl border border-white/10 bg-abyss-900 p-0
+           backdrop:bg-abyss-950/85 backdrop:backdrop-blur-sm"
+    aria-label="Калькулятор потерь на топливе"
+  >
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 px-6 py-4">
+      <p class="text-sm font-semibold text-foam-100">Сколько стоит обрастание</p>
+      <button
+        type="button"
+        data-calc-close
+        aria-label="Закрыть"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-foam-300 transition-colors hover:bg-white/10 hover:text-white"
+      >
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 4l10 10M14 4L4 14" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+
   <div
     id="calc"
     data-levels={JSON.stringify(foulingLevels)}
     data-fuels={JSON.stringify(fuels)}
     data-rate={cleaningRate}
-    class="grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12"
+    class="grid max-h-[calc(92vh-4.25rem)] gap-8 overflow-auto p-5 sm:p-7 lg:grid-cols-[1fr_1fr] lg:gap-10"
   >
     <form class="space-y-5" onsubmit="return false">
       <div>
@@ -111,9 +144,38 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
       </p>
     </div>
   </div>
+  </dialog>
 </Section>
 
 <script>
+  const dialog = document.getElementById('calc-dialog') as HTMLDialogElement | null;
+
+  if (dialog) {
+    document
+      .querySelector<HTMLButtonElement>('[data-calc-open]')
+      ?.addEventListener('click', () => {
+        dialog.showModal();
+        // окно открывается со своей прокруткой: возвращаем к первому полю,
+        // иначе посетитель видит сразу итоги, а не то, что вводить
+        dialog.querySelector('#calc')?.scrollTo(0, 0);
+      });
+
+    dialog.querySelector('[data-calc-close]')?.addEventListener('click', () => dialog.close());
+
+    // Ссылка на форму внутри окна: без этого страница уедет к форме,
+    // а модалка останется висеть поверх неё
+    dialog.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+      a.addEventListener('click', () => dialog.close());
+    });
+
+    dialog.addEventListener('click', (e) => {
+      const box = dialog.getBoundingClientRect();
+      const outside =
+        e.clientX < box.left || e.clientX > box.right || e.clientY < box.top || e.clientY > box.bottom;
+      if (outside) dialog.close();
+    });
+  }
+
   const root = document.getElementById('calc');
 
   if (root) {
