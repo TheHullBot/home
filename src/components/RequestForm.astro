@@ -40,6 +40,7 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
       id="request-form"
       data-endpoint={endpoint}
       data-phone={company.phone}
+      data-mail="info@hullbot.group"
       novalidate
       class="space-y-5"
     >
@@ -183,6 +184,36 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
     const button = form.querySelector('button[type=submit]') as HTMLButtonElement;
     const endpoint = form.dataset.endpoint || '';
     const phone = form.dataset.phone || '';
+    const mail = form.dataset.mail || '';
+
+    // Подписи полей повторяют серверный обработчик: письмо, собранное здесь,
+    // и письмо, собранное функцией, должны читаться одинаково.
+    const LABELS: [string, string][] = [
+      ['type', 'Тип объекта'],
+      ['imo', 'Номер IMO'],
+      ['size', 'Размер'],
+      ['scope', 'Объём работ'],
+      ['place', 'Порт или место стоянки'],
+      ['when', 'Даты стоянки'],
+      ['name', 'Имя'],
+      ['phone', 'Телефон'],
+      ['email', 'Почта'],
+      ['note', 'Комментарий'],
+    ];
+
+    // Запасной путь: письмо уходит из почтовой программы посетителя прямо на
+    // info@, не проходя ни через один сервер. Нужен, пока не поднят обработчик,
+    // и потом — когда обработчик недоступен.
+    const mailFallback = (payload: Record<string, unknown>) => {
+      const lines = LABELS.filter(([k]) => String(payload[k] ?? '').trim()).map(
+        ([k, l]) => `${l}: ${String(payload[k]).trim()}`,
+      );
+      lines.push('Согласие на обработку персональных данных: да');
+      const body = lines.join('\n').slice(0, 1500);
+      const subject = 'Заявка с сайта hullbot.group';
+      window.location.href =
+        `mailto:${mail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    };
 
     const typeSelect = form.querySelector<HTMLSelectElement>('#f-type');
     const imoField = document.getElementById('imo-field');
@@ -212,15 +243,15 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
       clearBad();
       const consent = form.querySelector<HTMLInputElement>('#f-consent');
       const name = form.querySelector<HTMLInputElement>('#f-name');
-      const phone = form.querySelector<HTMLInputElement>('#f-phone');
+      const phoneInput = form.querySelector<HTMLInputElement>('#f-phone');
 
       // Подсказываем конкретно, что не так, а не общей фразой на всю форму
       const missing: string[] = [];
       if (!name?.value.trim()) { markBad(name); missing.push('имя'); }
-      if (!phone?.value.trim()) { markBad(phone); missing.push('телефон'); }
+      if (!phoneInput?.value.trim()) { markBad(phoneInput); missing.push('телефон'); }
       if (missing.length) {
         say('err', `Не хватает: ${missing.join(' и ')}.`);
-        (missing[0] === 'имя' ? name : phone)?.focus();
+        (missing[0] === 'имя' ? name : phoneInput)?.focus();
         return;
       }
       if (!consent?.checked) {
@@ -233,16 +264,17 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
         form.reportValidity();
         return;
       }
-      if (!endpoint) {
-        say('err', `Форма ещё не подключена. Позвоните нам: ${phone}`);
-        return;
-      }
-
       const data = new FormData(form);
       const payload: Record<string, unknown> = Object.fromEntries(data.entries());
       // чекбоксов может быть несколько, из entries придёт только последний
       payload.scope = data.getAll('scope').join(', ');
       payload.consent = true;
+
+      if (!endpoint) {
+        mailFallback(payload);
+        say('ok', `Заявка собрана в письмо, осталось нажать «Отправить» в почте. Если письмо не открылось, позвоните: ${phone}`);
+        return;
+      }
 
       button.disabled = true;
       const original = button.textContent;
@@ -258,7 +290,8 @@ const label = 'mb-2 block text-sm font-medium text-foam-300';
         form.reset();
         say('ok', 'Заявка ушла. Свяжемся с вами при первой возможности.');
       } catch {
-        say('err', `Не удалось отправить. Позвоните нам: ${phone} или напишите на info@hullbot.group`);
+        mailFallback(payload);
+        say('err', `Отправить с сайта не вышло, заявка собрана в письмо. Или позвоните: ${phone}`);
       } finally {
         button.disabled = false;
         button.textContent = original;
