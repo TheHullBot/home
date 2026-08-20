@@ -27,7 +27,11 @@ const stamp = (file: string) => {
   }
 };
 
+// tr=orig-true запрещает хранилищу трогать файл: отдаётся ровно то, что залито.
+// Без этого ImageKit может сам перекодировать видео и жечь единицы обработки,
+// а при исчерпании лимита начинает отдавать ошибки вместо видео.
 export const media = (file: string) => {
+  if (!base) return `/${file}`;
   const v = stamp(file);
-  return `${base}/${file}${v ? `?v=${v}` : ''}`;
+  return `${base}/${file}?tr=orig-true${v ? `&v=${v}` : ''}`;
 };
