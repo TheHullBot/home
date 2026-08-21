@@ -5,9 +5,9 @@ import { media } from '../media';
 
 import processPoster from '../assets/process-poster.png';
 import launchPoster from '../assets/insp-launch-poster.png';
-import sonarPoster from '../assets/insp-sonar-poster.png';
+import panelPoster from '../assets/insp-panel-poster.png';
 import cameraSonarPoster from '../assets/insp-camera-sonar-poster.png';
-import consolePoster from '../assets/insp-console-poster.png';
+import telemetryPoster from '../assets/insp-telemetry-poster.png';
 import robotPoster from '../assets/insp-robot-poster.png';
 import sonarScreen from '../assets/insp-sonar-screen.png';
 
@@ -28,12 +28,6 @@ const clips = [
     note: 'Один пост оператора: слева обзор гидролокатора, справа камера в мутной воде.',
   },
   {
-    file: 'insp-sonar.mp4',
-    poster: sonarPoster,
-    label: 'Что видно на гидролокаторе',
-    note: 'Кольца сетки размечены от 0,5 до 3 метров: расстояние до объекта читается прямо с картинки.',
-  },
-  {
     file: 'insp-launch.mp4',
     poster: launchPoster,
     label: 'Спуск аппарата с причала',
@@ -46,10 +40,16 @@ const clips = [
     note: 'Движители, камера и крепление гидролокатора перед спуском.',
   },
   {
-    file: 'insp-console.mp4',
-    poster: consolePoster,
+    file: 'insp-panel.mp4',
+    poster: panelPoster,
+    label: 'Пульт управления',
+    note: 'Тяга, глубина, камера, свет и зум — всё, чем оператор ведёт аппарат, на одной панели.',
+  },
+  {
+    file: 'insp-telemetry.mp4',
+    poster: telemetryPoster,
     label: 'Пост оператора',
-    note: 'Положение аппарата, курс и глубина выводятся рядом с картинкой с камер.',
+    note: 'Курс, крен, дифферент, глубина и высота над грунтом идут на пост живыми числами.',
   },
 ];
 ---
