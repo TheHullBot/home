@@ -8,30 +8,50 @@ import passes from '../assets/ba-passes.webp';
 import night from '../assets/ba-night.webp';
 import clean from '../assets/ba-clean.webp';
 
-const stages = [
+const tone = {
+  before: 'text-red-300 border-red-400/30 bg-red-500/10',
+  during: 'text-signal-400 border-signal-500/30 bg-signal-500/10',
+  after: 'text-emerald-300 border-emerald-400/30 bg-emerald-500/10',
+};
+
+// Подпись под кадром короткая: длинное описание того, что и так видно,
+// дублировало бы и картинку, и alt. Подробности остаются в alt — их читают
+// поисковики и программы чтения с экрана.
+const shots = [
   {
+    img: fouling,
     tag: 'До',
-    tone: 'text-red-300 border-red-400/30 bg-red-500/10',
-    shots: [
-      { img: fouling, alt: 'Плотное биообрастание на подводной части корпуса: ракушка и известковые наросты' },
-      { img: propeller, alt: 'Гребной винт и дейдвуд, полностью заросшие обрастанием' },
-    ],
+    tone: tone.before,
+    caption: 'Обрастание до очистки',
+    alt: 'Плотное биообрастание на подводной части корпуса: ракушка и известковые наросты',
   },
   {
+    img: propeller,
+    tag: 'До',
+    tone: tone.before,
+    caption: 'Винт и дейдвуд',
+    alt: 'Гребной винт и дейдвуд, полностью заросшие обрастанием',
+  },
+  {
+    img: passes,
     tag: 'В процессе',
-    tone: 'text-signal-400 border-signal-500/30 bg-signal-500/10',
-    shots: [
-      { img: passes, alt: 'Полосы от проходов робота на корпусе: очищенные участки чередуются с необработанными' },
-      { img: night, alt: 'Очистка корпуса в тёмное время суток при свете прожектора робота' },
-    ],
+    tone: tone.during,
+    caption: 'Проходы аппарата',
+    alt: 'Полосы от проходов робота на корпусе: очищенные участки чередуются с необработанными',
   },
   {
+    img: night,
+    tag: 'В процессе',
+    tone: tone.during,
+    caption: 'Ночная смена',
+    alt: 'Очистка корпуса в тёмное время суток при свете прожектора робота',
+  },
+  {
+    img: clean,
     tag: 'После',
-    tone: 'text-emerald-300 border-emerald-400/30 bg-emerald-500/10',
-    shots: [
-      { img: partial, alt: 'Граница обработки: слева обрастание, справа очищенная поверхность' },
-      { img: clean, alt: 'Корпус после очистки: обрастание снято, лакокрасочное покрытие не нарушено' },
-    ],
+    tone: tone.after,
+    caption: 'Корпус после очистки',
+    alt: 'Корпус после очистки: обрастание снято, лакокрасочное покрытие не нарушено',
   },
 ];
 ---
@@ -42,27 +62,53 @@ const stages = [
   title="Что происходит с корпусом за одну смену"
   lead="Кадры сняты камерами инспекционного робота и бригадой на объектах. Обрастание уходит вместе с сопротивлением воды, покрытие при этом остаётся целым."
 >
-  <div class="space-y-10">
-    {stages.map((st) => (
-      <div>
-        <p class={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase ${st.tone}`}>
-          {st.tag}
-        </p>
-        <ul class="mt-4 grid gap-4 sm:grid-cols-2">
-          {st.shots.map((s) => (
-            <li class="overflow-hidden rounded-2xl border border-white/10">
-              <Image
-                src={s.img}
-                alt={s.alt}
-                widths={[520, 1040]}
-                sizes="(min-width: 640px) 50vw, 100vw"
-                class="h-56 w-full object-cover sm:h-64"
-              />
-              <p class="bg-abyss-900 px-4 py-3 text-sm leading-snug text-foam-300">{s.alt}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
+  {/* Этот кадр содержит и «до», и «после» сразу, поэтому идёт первым и крупно.
+      Ширину держим близкой к исходным 422 px: растянутый во всю колонку,
+      он бы поплыл. */}
+  <figure
+    class="mb-10 grid items-center gap-6 rounded-2xl border border-white/10 bg-abyss-900 p-5
+           sm:p-7 lg:grid-cols-[minmax(0,26rem)_1fr] lg:gap-10"
+  >
+    <Image
+      src={partial}
+      alt="Граница обработки: слева обрастание, справа очищенная поверхность"
+      widths={[422, 844]}
+      sizes="(min-width: 1024px) 26rem, 88vw"
+      loading="lazy"
+      class="w-full rounded-xl"
+    />
+    <figcaption class="leading-relaxed text-foam-400">
+      <span class={`mb-4 inline-flex rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase ${tone.after}`}>
+        Граница прохода
+      </span>
+      <span class="block">
+        Слева корпус, каким аппарат его застал, справа тот же участок после прохода. По этой границе
+        и видно, что снимается обрастание, а не покрытие: краска за роботом остаётся сплошной,
+        без задиров и проплешин.
+      </span>
+    </figcaption>
+  </figure>
+
+  <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+    {shots.map((s) => (
+      <li class="overflow-hidden rounded-xl border border-white/10 bg-abyss-900">
+        <span class="relative block">
+          <Image
+            src={s.img}
+            alt={s.alt}
+            widths={[240, 480]}
+            sizes="(min-width: 1024px) 12rem, (min-width: 640px) 30vw, 45vw"
+            loading="lazy"
+            class="aspect-[4/3] w-full object-cover"
+          />
+          <span
+            class={`absolute top-2 left-2 rounded-full border px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide uppercase backdrop-blur-sm ${s.tone}`}
+          >
+            {s.tag}
+          </span>
+        </span>
+        <p class="px-3 py-2.5 text-sm leading-snug text-foam-300">{s.caption}</p>
+      </li>
     ))}
-  </div>
+  </ul>
 </Section>
