@@ -4,7 +4,6 @@ import Section from './Section.astro';
 import fouling from '../assets/ba-fouling-heavy.webp';
 import propeller from '../assets/ba-propeller.webp';
 import partial from '../assets/ba-partial.webp';
-import passes from '../assets/ba-passes.webp';
 import night from '../assets/ba-night.webp';
 import clean from '../assets/ba-clean.webp';
 
@@ -31,13 +30,6 @@ const shots = [
     tone: tone.before,
     caption: 'Винт и дейдвуд',
     alt: 'Гребной винт и дейдвуд, полностью заросшие обрастанием',
-  },
-  {
-    img: passes,
-    tag: 'В процессе',
-    tone: tone.during,
-    caption: 'Проходы аппарата',
-    alt: 'Полосы от проходов робота на корпусе: очищенные участки чередуются с необработанными',
   },
   {
     img: night,
@@ -89,7 +81,7 @@ const shots = [
     </figcaption>
   </figure>
 
-  <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+  <ul class="grid grid-cols-2 gap-4 sm:grid-cols-4">
     {shots.map((s) => (
       <li class="overflow-hidden rounded-xl border border-white/10 bg-abyss-900">
         <span class="relative block">
