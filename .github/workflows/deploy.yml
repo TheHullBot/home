@@ -45,3 +45,53 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # Сообщаем поисковикам, что страницы изменились. IndexNow подтверждает
+  # владение файлом с ключом на домене, а не кодом из панели вебмастера,
+  # поэтому работает без доступов в Вебмастер и Search Console.
+  # Участвуют Яндекс, Bing, Seznam, Naver; Google протокол не поддерживает.
+  # Шаг намеренно не влияет на результат выкладки: сбой у поисковика
+  # не должен ронять деплой.
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Отправить адреса в IndexNow
+        run: |
+          set -u
+          key="$(ls public | grep -E '^[0-9a-fA-F-]{8,128}\.txt$' | head -1 | sed 's/\.txt$//')"
+          if [ -z "$key" ]; then
+            echo "Ключ IndexNow в public/ не найден, пропускаю"
+            exit 0
+          fi
+
+          # Список берём из карты сайта: новые страницы попадут в него сами.
+          # Выкладка на Pages может отставать на несколько секунд, поэтому ждём.
+          for i in 1 2 3 4 5; do
+            urls="$(curl -sf https://hullbot.group/sitemap-0.xml | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g' || true)"
+            [ -n "$urls" ] && break
+            echo "Карта сайта ещё не отдаётся, попытка $i"
+            sleep 10
+          done
+
+          if [ -z "$urls" ]; then
+            echo "Карта сайта недоступна, пропускаю"
+            exit 0
+          fi
+
+          payload="$(printf '%s\n' $urls | jq -R . | jq -s . \
+            | jq --arg h hullbot.group --arg k "$key" --arg l "https://hullbot.group/$key.txt" \
+                 '{host:$h,key:$k,keyLocation:$l,urlList:.}')"
+
+          echo "$payload" | jq -c '{host, urls: (.urlList | length)}'
+
+          for endpoint in https://api.indexnow.org/indexnow https://yandex.com/indexnow; do
+            code="$(curl -sS -o /tmp/indexnow-body -w '%{http_code}' -X POST "$endpoint" \
+              -H 'Content-Type: application/json; charset=utf-8' -d "$payload" || echo 000)"
+            echo "$endpoint -> HTTP $code"
+            cat /tmp/indexnow-body 2>/dev/null || true
+            echo
+          done
