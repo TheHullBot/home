@@ -1,10 +1,47 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ScrollTop from '../components/ScrollTop.astro';
 import PolicyDialog from '../components/PolicyDialog.astro';
-import { about, company, requisites } from '../content/site';
+import ArticlesTeaser from '../components/ArticlesTeaser.astro';
+import Section from '../components/Section.astro';
+import { about, company, requisites, vendorProof, robots } from '../content/site';
+
+import robotCr from '../assets/robot-cr01.png';
+import robotVr from '../assets/robot-vr01.png';
+import shotProcess from '../assets/process-poster.png';
+import shotLaunch from '../assets/insp-launch-poster.png';
+import shotPanel from '../assets/insp-panel-poster.png';
+import shotTelemetry from '../assets/insp-telemetry-poster.png';
+
+const fleet = [
+  { img: robotCr, data: robots.find((r) => r.id === 'cr01')! },
+  { img: robotVr, data: robots.find((r) => r.id === 'vr01')! },
+];
+
+const workShots = [
+  { img: shotProcess, cap: 'Кавитационная очистка корпуса у причала' },
+  { img: shotLaunch, cap: 'Спуск инспекционного аппарата с причала' },
+  { img: shotPanel, cap: 'Пульт управления аппаратом' },
+  { img: shotTelemetry, cap: 'Пост оператора: курс, глубина, телеметрия' },
+];
+
+const promises = [
+  'Судно 180 метров обрабатывается за 8 часов, за одну рабочую смену.',
+  'Работаем без остановки грузовых операций и без вывода судна из эксплуатации.',
+  'Лакокрасочное покрытие остаётся целым: кавитация работает без механического контакта.',
+  'Осмотр завершается отчётом с записями, видеокадрами и дистанциями до объектов.',
+  'На заявку отвечаем в течение рабочего дня.',
+];
+
+const boundaries = [
+  'Не заменяем докование: покрытие, ремонт и освидетельствования остаются за доком и классификационным обществом.',
+  'Не выполняем работы руками под водой и не обезвреживаем находки: обнаруживаем и документируем, дальше уполномоченные службы.',
+  'Не называем цену до данных об объекте: расчёт после заявки, а не цифра наугад.',
+  'Не обещаем зачёт осмотра классом: этот вопрос решается напрямую с классификационным обществом.',
+];
 
 const graph = {
   '@context': 'https://schema.org',
@@ -35,66 +72,180 @@ const graph = {
 >
   <Header />
 
-  <main id="main" class="mx-auto max-w-7xl px-5 pt-28 pb-20 lg:px-8 lg:pt-36">
+  <main id="main">
     <script type="application/ld+json" set:html={JSON.stringify(graph)} />
 
-    <nav aria-label="Хлебные крошки" class="text-sm text-foam-500">
-      <ol class="flex flex-wrap items-center gap-2">
-        <li><a href="/" class="transition-colors hover:text-white">Главная</a></li>
-        <li aria-hidden="true">/</li>
-        <li class="text-foam-300">О компании</li>
-      </ol>
-    </nav>
+    <div class="mx-auto max-w-7xl px-5 pt-28 lg:px-8 lg:pt-36">
+      <nav aria-label="Хлебные крошки" class="text-sm text-foam-500">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li><a href="/" class="transition-colors hover:text-white">Главная</a></li>
+          <li aria-hidden="true">/</li>
+          <li class="text-foam-300">О компании</li>
+        </ol>
+      </nav>
 
-    <header class="mt-8 max-w-3xl">
-      <p class="mb-4 flex items-center gap-3 text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">
-        <span class="h-px w-8 bg-signal-500"></span>
-        О компании
-      </p>
-      <h1 class="text-[length:var(--text-display)] leading-tight font-bold tracking-tight text-balance">
-        Кто выполняет работы
-      </h1>
-      <p data-speakable class="mt-5 text-lg leading-relaxed text-foam-300 text-pretty">{about.lead}</p>
-    </header>
+      <header class="mt-8 max-w-3xl">
+        <p class="mb-4 flex items-center gap-3 text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">
+          <span class="h-px w-8 bg-signal-500"></span>
+          О компании
+        </p>
+        <h1 class="text-[length:var(--text-display)] leading-tight font-bold tracking-tight text-balance">
+          Кто выполняет работы
+        </h1>
+        <p data-speakable class="mt-5 text-lg leading-relaxed text-foam-300 text-pretty">{about.lead}</p>
+      </header>
 
-    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
-      {about.facts.map((f) => (
-        <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
-          <p class="font-bold text-signal-500">{f.k}</p>
-          <p class="mt-2.5 text-sm leading-relaxed text-foam-400">{f.v}</p>
-        </div>
-      ))}
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {about.facts.map((f) => (
+          <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+            <p class="font-bold text-signal-500">{f.k}</p>
+            <p class="mt-2.5 text-sm leading-relaxed text-foam-400">{f.v}</p>
+          </div>
+        ))}
+      </div>
     </div>
 
-    <div class="mt-12 grid gap-5 lg:grid-cols-2">
-      <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
-        <h2 class="font-semibold text-foam-100">Реквизиты</h2>
-        <ul class="mt-4 space-y-1.5 text-sm leading-relaxed text-foam-400">
-          <li>{company.legalName}</li>
-          <li>ОГРН {requisites.ogrn} · ИНН {requisites.inn} · КПП {requisites.kpp}</li>
-          <li>{requisites.legalAddress}</li>
-        </ul>
+    <Section
+      eyebrow="Оборудование"
+      title="Технология, проверенная флотом"
+      lead={`${vendorProof.value} ${vendorProof.claim}. ${vendorProof.note}. Мы работаем на этих аппаратах по эксклюзивному контракту производителя на территорию России.`}
+    >
+      <div class="grid gap-5 lg:grid-cols-2">
+        {fleet.map((r) => (
+          <div class="flex flex-col rounded-2xl border border-white/10 bg-abyss-900 p-7 sm:flex-row sm:items-center sm:gap-7">
+            <Image
+              src={r.img}
+              alt={`${r.data.model}: ${r.data.kind.toLowerCase()}`}
+              widths={[280, 560]}
+              sizes="(min-width: 640px) 15rem, 60vw"
+              loading="lazy"
+              class="mx-auto h-40 w-auto shrink-0 object-contain sm:mx-0"
+            />
+            <div class="mt-5 sm:mt-0">
+              <p class="text-sm text-foam-500">{r.data.kind}</p>
+              <p class="mt-1 font-bold text-foam-100">{r.data.model}</p>
+              <p class="mt-2.5 text-sm leading-relaxed text-foam-400">{r.data.summary}</p>
+            </div>
+          </div>
+        ))}
       </div>
-      <div class="rounded-2xl border border-signal-500/25 bg-signal-500/5 p-7">
-        <h2 class="font-semibold text-foam-100">Цена работ</h2>
-        <p class="mt-4 text-sm leading-relaxed text-foam-300">
-          Определяется по договорённости после данных об объекте: тип и размер судна, степень
-          обрастания, порт и сроки. Опишите объект в заявке, вернёмся с расчётом стоимости
-          и срока в течение рабочего дня.
-        </p>
-        <div class="mt-5 flex flex-wrap gap-3">
-          <a
-            href="/#request"
-            class="rounded-full bg-signal-500 px-6 py-2.5 text-sm font-semibold text-abyss-950 transition-colors hover:bg-signal-400"
-          >
-            Оставить заявку
-          </a>
-          <a
-            href="/osmotr/"
-            class="rounded-full border border-white/20 px-6 py-2.5 text-sm font-semibold text-foam-100 transition-colors hover:border-signal-500/60"
-          >
-            Подводный осмотр
-          </a>
+      <p class="mt-6 text-sm text-foam-500">
+        Полные характеристики обоих аппаратов открываются в разделе{' '}
+        <a href="/#robots" class="text-signal-500 underline underline-offset-2 hover:text-signal-400">«Роботы»</a>{' '}
+        на главной.
+      </p>
+    </Section>
+
+    <Section
+      eyebrow="Съёмка с объектов"
+      title="Как выглядит наша работа"
+      lead="Кадры не постановочные: испытания инспекционного комплекса и рабочие смены на корпусах. Полные ролики собраны на главной странице."
+    >
+      <ul class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {workShots.map((w) => (
+          <li class="overflow-hidden rounded-xl border border-white/10 bg-abyss-900">
+            <Image
+              src={w.img}
+              alt={w.cap}
+              widths={[300, 600]}
+              sizes="(min-width: 1024px) 18rem, 45vw"
+              loading="lazy"
+              class="aspect-[4/3] w-full object-cover"
+            />
+            <p class="px-3.5 py-2.5 text-sm leading-snug text-foam-300">{w.cap}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-6 text-sm text-foam-500">
+        <a href="/#video" class="text-signal-500 underline underline-offset-2 hover:text-signal-400">Смотреть ролики со съёмок</a>
+      </p>
+    </Section>
+
+    <Section
+      eyebrow="Принципы"
+      title="Что мы обещаем и чего не обещаем"
+      lead="Доверие в этой отрасли строится на границах: заказчик должен понимать не только что подрядчик сделает, но и за что тот честно не берётся."
+    >
+      <div class="grid gap-5 lg:grid-cols-2">
+        <div class="rounded-2xl border border-signal-500/25 bg-signal-500/5 p-7">
+          <h3 class="font-semibold text-foam-100">Обещаем</h3>
+          <ul class="mt-4 space-y-3 text-sm leading-relaxed text-foam-300">
+            {promises.map((p) => (
+              <li class="flex gap-3">
+                <span class="mt-0.5 text-signal-500" aria-hidden="true">＋</span>
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+          <h3 class="font-semibold text-foam-100">Не обещаем</h3>
+          <ul class="mt-4 space-y-3 text-sm leading-relaxed text-foam-300">
+            {boundaries.map((b) => (
+              <li class="flex gap-3">
+                <span class="mt-0.5 text-foam-500" aria-hidden="true">－</span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </Section>
+
+    <Section
+      eyebrow="География"
+      title="Две базы, все порты страны"
+      lead="Базы на западе и востоке сокращают плечо до большинства направлений: бригада с оборудованием выезжает в любой порт России."
+    >
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+          <p class="font-bold text-foam-100">Санкт-Петербург</p>
+          <p class="mt-2 text-sm leading-relaxed text-foam-400">
+            {company.offices[0]}. Западное направление: Балтика, Северо-Запад, Арктика.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+          <p class="font-bold text-foam-100">Владивосток</p>
+          <p class="mt-2 text-sm leading-relaxed text-foam-400">
+            Дальневосточное направление: Приморье, Сахалин, Камчатка.
+          </p>
+        </div>
+      </div>
+    </Section>
+
+    <ArticlesTeaser />
+
+    <div class="mx-auto max-w-7xl px-5 pb-20 lg:px-8">
+      <div class="grid gap-5 lg:grid-cols-2">
+        <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+          <h2 class="font-semibold text-foam-100">Реквизиты</h2>
+          <ul class="mt-4 space-y-1.5 text-sm leading-relaxed text-foam-400">
+            <li>{company.legalName}</li>
+            <li>ОГРН {requisites.ogrn} · ИНН {requisites.inn} · КПП {requisites.kpp}</li>
+            <li>{requisites.legalAddress}</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border border-signal-500/25 bg-signal-500/5 p-7">
+          <h2 class="font-semibold text-foam-100">Цена работ</h2>
+          <p class="mt-4 text-sm leading-relaxed text-foam-300">
+            Определяется по договорённости после данных об объекте: тип и размер судна, степень
+            обрастания, порт и сроки. Опишите объект в заявке, вернёмся с расчётом стоимости
+            и срока в течение рабочего дня.
+          </p>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <a
+              href="/#request"
+              class="rounded-full bg-signal-500 px-6 py-2.5 text-sm font-semibold text-abyss-950 transition-colors hover:bg-signal-400"
+            >
+              Оставить заявку
+            </a>
+            <a
+              href="/osmotr/"
+              class="rounded-full border border-white/20 px-6 py-2.5 text-sm font-semibold text-foam-100 transition-colors hover:border-signal-500/60"
+            >
+              Подводный осмотр
+            </a>
+          </div>
         </div>
       </div>
     </div>
