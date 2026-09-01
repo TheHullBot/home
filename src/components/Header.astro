@@ -4,11 +4,13 @@ import { company } from '../content/site';
 // Меню ведёт к блокам, которые убеждают, а не перечисляет всё подряд.
 // Только то, что решает: чем делаем, чем докажем, сколько сэкономим, как связаться.
 // short — для шапки, label — для мобильного меню, где место есть.
+// Якоря с ведущим слэшем, чтобы работать и со страниц статей
 const links = [
-  { href: '#robots', label: 'Роботы', short: 'Роботы' },
-  { href: '#before-after', label: 'До и после', short: 'До и после' },
-  { href: '#calculator', label: 'Расчёт экономии', short: 'Экономия' },
-  { href: '#contacts', label: 'Контакты', short: 'Контакты' },
+  { href: '/#robots', label: 'Роботы', short: 'Роботы' },
+  { href: '/#before-after', label: 'До и после', short: 'До и после' },
+  { href: '/#calculator', label: 'Расчёт экономии', short: 'Экономия' },
+  { href: '/articles/', label: 'Статьи', short: 'Статьи' },
+  { href: '/#contacts', label: 'Контакты', short: 'Контакты' },
 ];
 ---
 

@@ -1,0 +1,194 @@
+---
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ScrollTop from '../components/ScrollTop.astro';
+import PolicyDialog from '../components/PolicyDialog.astro';
+import { articles, articleUrl, type ArticleMeta } from '../data/articles';
+import { company } from '../content/site';
+
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+interface SourceItem {
+  name: string;
+  url?: string;
+}
+
+interface Props {
+  meta: ArticleMeta;
+  faq: FaqItem[];
+  sources: SourceItem[];
+}
+
+const { meta, faq, sources } = Astro.props;
+const canonical = `https://hullbot.group${articleUrl(meta.slug)}`;
+const related = articles.filter((a) => a.slug !== meta.slug);
+
+// Article, хлебные крошки и FAQ конкретной статьи. Общий граф
+// (Organization, Service, WebSite, WebPage) уже выводит Base.
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      '@id': `${canonical}#article`,
+      headline: meta.title,
+      description: meta.description,
+      inLanguage: 'ru-RU',
+      datePublished: meta.published,
+      dateModified: meta.updated,
+      mainEntityOfPage: canonical,
+      author: { '@id': 'https://hullbot.group/#org' },
+      publisher: { '@id': 'https://hullbot.group/#org' },
+      isPartOf: { '@id': 'https://hullbot.group/#website' },
+      about: { '@id': 'https://hullbot.group/#service' },
+      image: 'https://hullbot.group/og.jpg',
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://hullbot.group/' },
+        { '@type': 'ListItem', position: 2, name: 'Статьи', item: 'https://hullbot.group/articles/' },
+        { '@type': 'ListItem', position: 3, name: meta.shortTitle, item: canonical },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+};
+---
+
+<Base title={`${meta.title} | ${company.shortName}`} description={meta.description}>
+  <Header />
+
+  <main id="main" class="mx-auto max-w-7xl px-5 pt-28 pb-20 lg:px-8 lg:pt-36">
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+
+    <nav aria-label="Хлебные крошки" class="text-sm text-foam-500">
+      <ol class="flex flex-wrap items-center gap-2">
+        <li><a href="/" class="transition-colors hover:text-white">Главная</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href="/articles/" class="transition-colors hover:text-white">Статьи</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="text-foam-300">{meta.shortTitle}</li>
+      </ol>
+    </nav>
+
+    <article class="mt-8 grid gap-12 lg:grid-cols-[minmax(0,46rem)_1fr] lg:gap-16">
+      <div>
+        <header>
+          <h1 class="text-[length:var(--text-display)] leading-tight font-bold tracking-tight text-balance">
+            {meta.title}
+          </h1>
+          <p class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-foam-500">
+            <time datetime={meta.updated}>
+              Обновлено {new Date(meta.updated).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </time>
+            <span aria-hidden="true">·</span>
+            <span>{meta.readingMinutes} мин чтения</span>
+            <span aria-hidden="true">·</span>
+            <span>{company.shortName}</span>
+          </p>
+          <p data-speakable class="mt-6 text-lg leading-relaxed text-foam-300 text-pretty">
+            {meta.takeaway}
+          </p>
+        </header>
+
+        {/* Типографика статьи задана селекторами на обёртке, чтобы текст
+            в страницах оставался чистой разметкой без классов на каждом абзаце */}
+        <div
+          class="article-body mt-10 space-y-5 leading-relaxed text-foam-300
+                 [&_a]:text-signal-500 [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-signal-400
+                 [&_h2]:mt-12 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-foam-100
+                 [&_h3]:mt-8 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foam-100
+                 [&_strong]:font-semibold [&_strong]:text-foam-100
+                 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6
+                 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6
+                 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm
+                 [&_th]:border-b [&_th]:border-white/15 [&_th]:py-2.5 [&_th]:pr-4 [&_th]:text-left [&_th]:font-semibold [&_th]:text-foam-100
+                 [&_td]:border-b [&_td]:border-white/10 [&_td]:py-2.5 [&_td]:pr-4 [&_td]:align-top"
+        >
+          <slot />
+        </div>
+
+        <section class="mt-14" aria-labelledby="faq-title">
+          <h2 id="faq-title" class="text-2xl font-bold tracking-tight text-foam-100">
+            Частые вопросы
+          </h2>
+          <dl class="mt-6 space-y-6">
+            {faq.map((f) => (
+              <div class="rounded-2xl border border-white/10 bg-abyss-900 p-6">
+                <dt class="font-semibold text-foam-100">{f.q}</dt>
+                <dd class="mt-2.5 leading-relaxed text-foam-300">{f.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        {sources.length > 0 && (
+          <section class="mt-12" aria-labelledby="sources-title">
+            <h2 id="sources-title" class="text-sm font-semibold tracking-wide text-foam-100 uppercase">
+              Источники
+            </h2>
+            <ul class="mt-4 space-y-2 text-sm leading-relaxed text-foam-500">
+              {sources.map((s) => (
+                <li>
+                  {s.url ? (
+                    <a href={s.url} rel="nofollow noopener" target="_blank" class="underline underline-offset-2 transition-colors hover:text-foam-300">{s.name}</a>
+                  ) : (
+                    s.name
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
+
+      <aside class="lg:pt-24">
+        <div class="lg:sticky lg:top-28 space-y-6">
+          <div class="rounded-2xl border border-signal-500/25 bg-signal-500/5 p-6">
+            <p class="font-semibold text-foam-100">Посчитать по своему судну</p>
+            <p class="mt-2 text-sm leading-relaxed text-foam-300">
+              Калькулятор на главной подставит ваши расход, тариф и степень обрастания
+              и покажет потери за год.
+            </p>
+            <a
+              href="/#calculator"
+              class="mt-4 inline-block rounded-full bg-signal-500 px-6 py-2.5 text-sm font-semibold text-abyss-950 transition-colors hover:bg-signal-400"
+            >
+              Открыть калькулятор
+            </a>
+          </div>
+
+          <div class="rounded-2xl border border-white/10 bg-abyss-900 p-6">
+            <p class="text-sm font-semibold tracking-wide text-foam-100 uppercase">Ещё по теме</p>
+            <ul class="mt-4 space-y-3 text-sm leading-snug">
+              {related.map((a) => (
+                <li>
+                  <a href={articleUrl(a.slug)} class="text-foam-300 transition-colors hover:text-white">
+                    {a.shortTitle}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </article>
+  </main>
+
+  <Footer />
+  <PolicyDialog />
+  <ScrollTop />
+</Base>

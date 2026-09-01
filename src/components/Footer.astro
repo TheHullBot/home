@@ -49,9 +49,12 @@ const hasRequisites = Boolean(requisites.ogrn && requisites.inn);
   <div class="border-t border-white/10">
     <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-xs text-foam-500 lg:px-8">
       <p>© {new Date().getFullYear()} {company.legalName}</p>
-      <a href="/privacy/" class="transition-colors hover:text-signal-500">
-        Политика обработки персональных данных
-      </a>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <a href="/articles/" class="transition-colors hover:text-signal-500">Статьи</a>
+        <a href="/privacy/" class="transition-colors hover:text-signal-500">
+          Политика обработки персональных данных
+        </a>
+      </div>
     </div>
   </div>
 </footer>

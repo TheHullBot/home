@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { company, benefits, objects, process, robots, equipment, faq, vendorProof } from '../content/site';
+import { articles, articleUrl } from '../data/articles';
 
 // Краткая выжимка сайта для языковых моделей: llms.txt читают ассистенты,
 // которым нужен смысл страницы без разбора вёрстки.
@@ -15,6 +16,10 @@ export const GET: APIRoute = () => {
 ## Что делаем
 
 ${benefits.map((b) => `- ${b.label}: ${b.value}. ${b.note}`).join('\n')}
+
+## Статьи
+
+${articles.map((a) => `- ${a.title}\n  https://hullbot.group${articleUrl(a.slug)}\n  ${a.takeaway}`).join('\n')}
 
 ## Объекты
 
