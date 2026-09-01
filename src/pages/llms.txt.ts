@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { company, benefits, objects, process, robots, equipment, faq, vendorProof } from '../content/site';
+import { company, benefits, objects, process, robots, equipment, faq, vendorProof, about } from '../content/site';
 import { articles, articleUrl } from '../data/articles';
 
 // Краткая выжимка сайта для языковых моделей: llms.txt читают ассистенты,
@@ -16,6 +16,11 @@ export const GET: APIRoute = () => {
 ## Что делаем
 
 ${benefits.map((b) => `- ${b.label}: ${b.value}. ${b.note}`).join('\n')}
+
+## Компания
+
+${about.facts.map((f) => `- ${f.k}: ${f.v}`).join('\n')}
+- Цена работ определяется по договорённости после данных об объекте.
 
 ## Статьи
 
