@@ -1,0 +1,35 @@
+---
+import Section from './Section.astro';
+import { articles, articleUrl } from '../data/articles';
+
+// На главной три свежих разбора; полный список живёт на /articles/
+const latest = articles.slice(0, 3);
+---
+
+<Section
+  id="articles"
+  eyebrow="Статьи"
+  title="Разборы с цифрами, а не обещаниями"
+  lead="Во что обходится обрастание, когда действительно нужен док и как корпус влияет на рейтинг CII: формулы, таблицы и ссылки на первоисточники."
+>
+  <ul class="grid gap-5 lg:grid-cols-3">
+    {latest.map((a) => (
+      <li>
+        <a
+          href={articleUrl(a.slug)}
+          class="flex h-full flex-col rounded-2xl border border-white/10 bg-abyss-900 p-7 transition-colors hover:border-signal-500/60"
+        >
+          <p class="text-sm text-foam-500">{a.readingMinutes} мин чтения</p>
+          <h3 class="mt-3 text-lg leading-snug font-bold text-foam-100">{a.shortTitle}</h3>
+          <p class="mt-3 grow text-sm leading-relaxed text-foam-400">{a.description}</p>
+          <span class="mt-5 text-sm font-semibold text-signal-500">Читать</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="mt-8">
+    <a href="/articles/" class="text-sm font-semibold text-foam-300 underline underline-offset-2 transition-colors hover:text-white">
+      Все статьи
+    </a>
+  </p>
+</Section>

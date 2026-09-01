@@ -34,7 +34,11 @@ const hasRequisites = Boolean(requisites.ogrn && requisites.inn);
     <div>
       <h2 class="text-sm font-semibold tracking-wide text-foam-100">Услуги</h2>
       <ul class="mt-4 space-y-2 text-sm text-foam-300">
-        {company.services.map((s) => <li>{s}</li>)}
+        {company.services.map((s) =>
+          s === 'Подводная съёмка и инспекция'
+            ? <li><a class="hover:text-signal-500" href="/osmotr/">{s}</a></li>
+            : <li>{s}</li>
+        )}
       </ul>
     </div>
 

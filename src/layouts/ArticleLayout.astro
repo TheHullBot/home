@@ -45,7 +45,7 @@ const graph = {
       publisher: { '@id': 'https://hullbot.group/#org' },
       isPartOf: { '@id': 'https://hullbot.group/#website' },
       about: { '@id': 'https://hullbot.group/#service' },
-      image: 'https://hullbot.group/og.jpg',
+      image: `https://hullbot.group${meta.ogImage}`,
     },
     {
       '@type': 'BreadcrumbList',
@@ -68,7 +68,7 @@ const graph = {
 };
 ---
 
-<Base title={`${meta.title} | ${company.shortName}`} description={meta.description}>
+<Base title={`${meta.title} | ${company.shortName}`} description={meta.description} ogImage={meta.ogImage}>
   <Header />
 
   <main id="main" class="mx-auto max-w-7xl px-5 pt-28 pb-20 lg:px-8 lg:pt-36">

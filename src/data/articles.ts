@@ -11,6 +11,8 @@ export interface ArticleMeta {
   published: string;
   updated: string;
   readingMinutes: number;
+  // картинка для шаринга, лежит в public/og
+  ogImage: string;
   // Что нейросеть может процитировать одним абзацем, попадает в llms.txt
   takeaway: string;
 }
@@ -18,6 +20,7 @@ export interface ArticleMeta {
 export const articles: ArticleMeta[] = [
   {
     slug: 'podvodnyy-osmotr-sudna',
+    ogImage: '/og/og-podvodnyy-osmotr-sudna.jpg',
     title: 'Подводный осмотр судна: что видит инспекционный робот и когда он нужен',
     shortTitle: 'Подводный осмотр судна',
     description:
@@ -30,6 +33,7 @@ export const articles: ArticleMeta[] = [
   },
   {
     slug: 'obrastanie-i-raskhod-topliva',
+    ogImage: '/og/og-obrastanie-i-raskhod-topliva.jpg',
     title: 'Сколько топлива съедает обрастание корпуса: цифры и формула расчёта',
     shortTitle: 'Обрастание и расход топлива',
     description:
@@ -42,6 +46,7 @@ export const articles: ArticleMeta[] = [
   },
   {
     slug: 'ochistka-na-plavu-ili-dokovanie',
+    ogImage: '/og/og-ochistka-na-plavu-ili-dokovanie.jpg',
     title: 'Очистка корпуса на плаву или докование: что выбрать и когда',
     shortTitle: 'На плаву или в доке',
     description:
@@ -54,6 +59,7 @@ export const articles: ArticleMeta[] = [
   },
   {
     slug: 'cii-i-ochistka-korpusa',
+    ogImage: '/og/og-cii-i-ochistka-korpusa.jpg',
     title: 'Рейтинг CII: как обрастание корпуса роняет класс судна и как его вернуть',
     shortTitle: 'CII и очистка корпуса',
     description:

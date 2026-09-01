@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { articles, articleUrl } from '../data/articles';
+---
+
+<Base
+  title="Страница не найдена | ХаллБот Групп"
+  description="Такой страницы на сайте нет. Главная, услуги и статьи по ссылкам ниже."
+>
+  <Header />
+
+  <main id="main" class="mx-auto flex min-h-[60vh] max-w-7xl flex-col justify-center px-5 pt-28 pb-20 lg:px-8">
+    <p class="text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">Ошибка 404</p>
+    <h1 class="mt-4 max-w-3xl text-[length:var(--text-display)] leading-tight font-bold tracking-tight">
+      Такой страницы нет
+    </h1>
+    <p class="mt-5 max-w-xl text-lg leading-relaxed text-foam-300">
+      Возможно, ссылка устарела или в адресе опечатка. Вот куда можно пойти отсюда:
+    </p>
+    <ul class="mt-8 space-y-3 text-foam-300">
+      <li>
+        <a href="/" class="text-signal-500 underline underline-offset-2 hover:text-signal-400">Главная</a>
+        <span class="text-foam-500"> · очистка и осмотр корпуса судна на плаву</span>
+      </li>
+      <li>
+        <a href="/osmotr/" class="text-signal-500 underline underline-offset-2 hover:text-signal-400">Подводный осмотр</a>
+        <span class="text-foam-500"> · страница услуги</span>
+      </li>
+      <li>
+        <a href="/articles/" class="text-signal-500 underline underline-offset-2 hover:text-signal-400">Статьи</a>
+        <span class="text-foam-500"> · {articles.map((a) => a.shortTitle).slice(0, 2).join(', ')} и другие</span>
+      </li>
+      <li>
+        <a href="/#request" class="text-signal-500 underline underline-offset-2 hover:text-signal-400">Оставить заявку</a>
+      </li>
+    </ul>
+  </main>
+
+  <Footer />
+</Base>

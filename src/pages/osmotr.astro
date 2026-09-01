@@ -1,0 +1,285 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ScrollTop from '../components/ScrollTop.astro';
+import PolicyDialog from '../components/PolicyDialog.astro';
+import RequestForm from '../components/RequestForm.astro';
+import Section from '../components/Section.astro';
+
+import robotShot from '../assets/insp-robot-poster.png';
+import sonarScreen from '../assets/insp-sonar-screen.png';
+import cameraSonar from '../assets/insp-camera-sonar-poster.png';
+import launchShot from '../assets/insp-launch-poster.png';
+
+const reasons = [
+  {
+    t: 'Контроль обрастания',
+    d: 'Стадия и распределение по зонам корпуса, чтобы решать об очистке по факту, а не по календарю.',
+  },
+  {
+    t: 'Проверка перед заходом в порт',
+    d: 'Посторонние предметы на корпусе: от контрабанды в нишах до устройств, установленных на стоянке. Осмотр фиксирует, что корпус чист.',
+  },
+  {
+    t: 'После касания грунта или навала',
+    d: 'Картина повреждений за часы вместо недель ожидания дока: запись для класса, страховщика и завода.',
+  },
+  {
+    t: 'Споры по расходу и чартеру',
+    d: 'Состояние корпуса и винта как документ для переговоров с фрахтователем, а не мнение сторон.',
+  },
+  {
+    t: 'Фиксация до и после работ',
+    d: 'Приёмка очистки, приём судна в чартер и возврат, предпродажный осмотр, оценка объёма доковых работ заранее.',
+  },
+];
+
+const steps = [
+  {
+    t: 'Согласование с судном',
+    d: 'Время работ и запрет на проворот винта и подруливающие устройства согласуются с вахтой. Грузовые операции не останавливаются.',
+  },
+  {
+    t: 'Спуск с причала',
+    d: 'Аппарат уходит под воду без водолазов и обеспечивающего судна, кабель-трос остаётся на причале.',
+  },
+  {
+    t: 'Осмотр галсами',
+    d: 'Аппарат проходит подводную часть галсами, оператор ведёт его по гидролокатору, камере и телеметрии: курс, глубина, высота.',
+  },
+  {
+    t: 'Фиксация находок',
+    d: 'Каждая особенность записывается: положение на корпусе, дистанция, акустическая картина, видеокадр где позволяет вода.',
+  },
+  {
+    t: 'Отчёт заказчику',
+    d: 'Состояние подводной части по зонам, стадия обрастания, найденные объекты, записи и дистанции. Материал, с которым можно работать дальше.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Судно стоит под грузовыми операциями. Это помеха осмотру?',
+    a: 'Нет. Аппарат работает на подводной части и с грузовыми операциями не пересекается. Согласуется только запрет на проворот винта и подруливающие устройства на время нахождения аппарата в их зоне.',
+  },
+  {
+    q: 'Вода в порту мутная. Что вообще будет видно?',
+    a: 'Осмотр строится на гидролокаторе, которому взвесь не мешает: корпус, винт, решётки и посторонние предметы видны акустикой на дистанции в несколько метров, расстояние читается прямо с экрана. Камера подключается для деталей там, где можно подойти вплотную.',
+  },
+  {
+    q: 'Кому и в каком виде уходит результат?',
+    a: 'Заказчику: отчёт по состоянию подводной части с записями гидролокатора, видеокадрами и дистанциями до объектов. При находке постороннего предмета материалы передаются капитану и судовладельцу, дальнейшие шаги за ними и уполномоченными службами.',
+  },
+];
+
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': 'https://hullbot.group/osmotr/#service',
+      name: 'Подводный осмотр судна инспекционным роботом',
+      serviceType: 'Подводная инспекция судов',
+      provider: { '@id': 'https://hullbot.group/#org' },
+      areaServed: { '@type': 'Country', name: 'Россия' },
+      description:
+        'Осмотр подводной части судна без водолазов и без остановки грузовых операций: гидролокатор и камера, отчёт по состоянию корпуса, поиск посторонних предметов. Порты России, базы в Санкт-Петербурге и Владивостоке.',
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://hullbot.group/' },
+        { '@type': 'ListItem', position: 2, name: 'Подводный осмотр', item: 'https://hullbot.group/osmotr/' },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': 'https://hullbot.group/osmotr/#faq',
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+};
+---
+
+<Base
+  title="Подводный осмотр судна инспекционным роботом | СПб, Владивосток"
+  description="Осмотр подводной части судна без водолазов: гидролокатор видит корпус и посторонние предметы в мутной портовой воде. Отчёт по состоянию корпуса, проверка перед заходом в порт, работа без остановки грузовых операций."
+  ogImage="/og/og-podvodnyy-osmotr-sudna.jpg"
+>
+  <Header />
+
+  <main id="main">
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+
+    <section class="mx-auto max-w-7xl px-5 pt-28 pb-4 lg:px-8 lg:pt-36">
+      <nav aria-label="Хлебные крошки" class="text-sm text-foam-500">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li><a href="/" class="transition-colors hover:text-white">Главная</a></li>
+          <li aria-hidden="true">/</li>
+          <li class="text-foam-300">Подводный осмотр</li>
+        </ol>
+      </nav>
+
+      <div class="mt-8 grid items-center gap-10 lg:grid-cols-[minmax(0,40rem)_1fr] lg:gap-16">
+        <div>
+          <p class="mb-4 flex items-center gap-3 text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">
+            <span class="h-px w-8 bg-signal-500"></span>
+            Услуга
+          </p>
+          <h1 class="text-[length:var(--text-hero)] leading-[1.05] font-bold tracking-tight text-balance">
+            Подводный осмотр судна без водолазов
+          </h1>
+          <p data-speakable class="mt-6 max-w-xl text-lg leading-relaxed text-foam-300 text-pretty">
+            Инспекционный робот с гидролокатором осматривает подводную часть в любой воде,
+            включая мутную портовую, и не требует остановки грузовых операций. Итог: отчёт
+            по состоянию корпуса, винта и решёток, поиск посторонних предметов.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a
+              href="#request"
+              class="rounded-full bg-signal-500 px-7 py-3.5 font-semibold text-abyss-950 transition-colors hover:bg-signal-400"
+            >
+              Запросить осмотр
+            </a>
+            <a
+              href="/articles/podvodnyy-osmotr-sudna/"
+              class="rounded-full border border-white/20 px-7 py-3.5 font-semibold text-foam-100 transition-colors hover:border-signal-500/60"
+            >
+              Как это работает
+            </a>
+          </div>
+        </div>
+        <figure class="overflow-hidden rounded-2xl border border-white/10">
+          <Image
+            src={robotShot}
+            alt="Инспекционный подводный аппарат с движителями и гидролокатором перед спуском"
+            widths={[560, 1024]}
+            sizes="(min-width: 1024px) 34rem, 92vw"
+            loading="eager"
+            class="aspect-[4/4.4] w-full object-cover object-[50%_62%]"
+          />
+          <figcaption class="bg-abyss-900 px-5 py-3 text-sm text-foam-500">
+            Инспекционный аппарат перед спуском. Съёмка с испытаний комплекса.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <Section eyebrow="Когда нужен" title="Пять поводов посмотреть под воду">
+      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {reasons.map((r) => (
+          <li class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+            <p class="font-semibold text-foam-100">{r.t}</p>
+            <p class="mt-2.5 text-sm leading-relaxed text-foam-400">{r.d}</p>
+          </li>
+        ))}
+        <li class="rounded-2xl border border-signal-500/25 bg-signal-500/5 p-7">
+          <p class="font-semibold text-foam-100">Свой случай?</p>
+          <p class="mt-2.5 text-sm leading-relaxed text-foam-300">
+            Опишите задачу в заявке, скажем честно, решается ли она осмотром.
+          </p>
+          <a href="#request" class="mt-4 inline-block text-sm font-semibold text-signal-500 hover:text-signal-400">
+            Запросить осмотр
+          </a>
+        </li>
+      </ul>
+    </Section>
+
+    <Section
+      eyebrow="Чем смотрим"
+      title="Гидролокатор там, где камера слепнет"
+      lead="Видимость в портовой воде нередко меньше метра, и камера показывает освещённую фонарём взвесь. Поэтому основа осмотра акустика: гидролокатор строит картину, которой муть не мешает, а камера рассматривает найденное вблизи."
+    >
+      <div class="grid gap-5 lg:grid-cols-2">
+        <figure class="overflow-hidden rounded-2xl border border-white/10 bg-abyss-900">
+          <Image
+            src={sonarScreen}
+            alt="Экран гидролокатора: сектор обзора с сеткой дальности, корпус судна виден ярким следом"
+            widths={[640, 1185]}
+            sizes="(min-width: 1024px) 38rem, 92vw"
+            loading="lazy"
+            class="w-full"
+          />
+          <figcaption class="px-5 py-3.5 text-sm leading-relaxed text-foam-400">
+            Корпус на экране гидролокатора. Сектор размечен по дальности от 0,5 до 3 метров,
+            расстояние до объекта читается прямо с картинки.
+          </figcaption>
+        </figure>
+        <div class="flex flex-col gap-5">
+          <figure class="overflow-hidden rounded-2xl border border-white/10 bg-abyss-900">
+            <Image
+              src={cameraSonar}
+              alt="Пост оператора: обзор гидролокатора и картинка подводной камеры на одном экране"
+              widths={[640, 1024]}
+              sizes="(min-width: 1024px) 38rem, 92vw"
+              loading="lazy"
+              class="aspect-[16/8] w-full object-cover"
+            />
+            <figcaption class="px-5 py-3.5 text-sm leading-relaxed text-foam-400">
+              Один пост, два инструмента: гидролокатор ищет, камера рассматривает.
+            </figcaption>
+          </figure>
+          <figure class="overflow-hidden rounded-2xl border border-white/10 bg-abyss-900">
+            <Image
+              src={launchShot}
+              alt="Инспекционный аппарат уходит под воду у причала, кабель-трос остаётся на причале"
+              widths={[640, 1024]}
+              sizes="(min-width: 1024px) 38rem, 92vw"
+              loading="lazy"
+              class="aspect-[16/8] w-full object-cover object-[50%_35%]"
+            />
+            <figcaption class="px-5 py-3.5 text-sm leading-relaxed text-foam-400">
+              Спуск с причала: без водолазов и обеспечивающего судна.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </Section>
+
+    <Section eyebrow="Как проходит" title="От согласования до отчёта">
+      <ol class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+        {steps.map((st, i) => (
+          <li class="rounded-2xl border border-white/10 bg-abyss-900 p-6">
+            <p class="text-[length:var(--text-title)] font-bold text-signal-500">{i + 1}</p>
+            <p class="mt-2 font-semibold text-foam-100">{st.t}</p>
+            <p class="mt-2 text-sm leading-relaxed text-foam-400">{st.d}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="mt-8 max-w-3xl text-sm leading-relaxed text-foam-500">
+        Осмотр не заменяет освидетельствования классификационного общества: вопросы зачёта
+        решаются с классом для конкретного судна. При обнаружении предмета, похожего
+        на взрывное устройство, работы у находки прекращаются, материалы передаются капитану
+        и уполномоченным службам: осмотр обнаруживает и документирует, не прикасаясь.
+      </p>
+    </Section>
+
+    <Section eyebrow="Вопросы" title="Что спрашивают перед первым осмотром">
+      <dl class="grid gap-5 lg:grid-cols-3">
+        {faq.map((f) => (
+          <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+            <dt class="font-semibold text-foam-100">{f.q}</dt>
+            <dd class="mt-2.5 text-sm leading-relaxed text-foam-300">{f.a}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="mt-8 text-sm text-foam-500">
+        Подробный разбор со ссылками на первоисточники: статья{' '}
+        <a href="/articles/podvodnyy-osmotr-sudna/" class="text-signal-500 underline underline-offset-2 hover:text-signal-400">
+          «Подводный осмотр судна: что видит инспекционный робот и когда он нужен»</a>.
+      </p>
+    </Section>
+
+    <RequestForm />
+  </main>
+
+  <Footer />
+  <PolicyDialog />
+  <ScrollTop />
+</Base>
