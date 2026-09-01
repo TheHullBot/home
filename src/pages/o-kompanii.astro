@@ -1,0 +1,106 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ScrollTop from '../components/ScrollTop.astro';
+import PolicyDialog from '../components/PolicyDialog.astro';
+import { about, company, requisites } from '../content/site';
+
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'AboutPage',
+      '@id': 'https://hullbot.group/o-kompanii/#page',
+      url: 'https://hullbot.group/o-kompanii/',
+      name: 'О компании ХаллБот Групп',
+      inLanguage: 'ru-RU',
+      about: { '@id': 'https://hullbot.group/#org' },
+      isPartOf: { '@id': 'https://hullbot.group/#website' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://hullbot.group/' },
+        { '@type': 'ListItem', position: 2, name: 'О компании', item: 'https://hullbot.group/o-kompanii/' },
+      ],
+    },
+  ],
+};
+---
+
+<Base
+  title="О компании ХаллБот Групп: подводный осмотр и очистка судов"
+  description="ООО «ХАЛЛБОТГРУПП»: подводный осмотр и роботизированная очистка судов во всех портах России. Официальное оборудование Seashell Robotics по эксклюзивному контракту, несколько независимых бригад, базы в Санкт-Петербурге и Владивостоке."
+>
+  <Header />
+
+  <main id="main" class="mx-auto max-w-7xl px-5 pt-28 pb-20 lg:px-8 lg:pt-36">
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+
+    <nav aria-label="Хлебные крошки" class="text-sm text-foam-500">
+      <ol class="flex flex-wrap items-center gap-2">
+        <li><a href="/" class="transition-colors hover:text-white">Главная</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="text-foam-300">О компании</li>
+      </ol>
+    </nav>
+
+    <header class="mt-8 max-w-3xl">
+      <p class="mb-4 flex items-center gap-3 text-sm font-medium tracking-[0.2em] text-signal-500 uppercase">
+        <span class="h-px w-8 bg-signal-500"></span>
+        О компании
+      </p>
+      <h1 class="text-[length:var(--text-display)] leading-tight font-bold tracking-tight text-balance">
+        Кто выполняет работы
+      </h1>
+      <p data-speakable class="mt-5 text-lg leading-relaxed text-foam-300 text-pretty">{about.lead}</p>
+    </header>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
+      {about.facts.map((f) => (
+        <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+          <p class="font-bold text-signal-500">{f.k}</p>
+          <p class="mt-2.5 text-sm leading-relaxed text-foam-400">{f.v}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-12 grid gap-5 lg:grid-cols-2">
+      <div class="rounded-2xl border border-white/10 bg-abyss-900 p-7">
+        <h2 class="font-semibold text-foam-100">Реквизиты</h2>
+        <ul class="mt-4 space-y-1.5 text-sm leading-relaxed text-foam-400">
+          <li>{company.legalName}</li>
+          <li>ОГРН {requisites.ogrn} · ИНН {requisites.inn} · КПП {requisites.kpp}</li>
+          <li>{requisites.legalAddress}</li>
+        </ul>
+      </div>
+      <div class="rounded-2xl border border-signal-500/25 bg-signal-500/5 p-7">
+        <h2 class="font-semibold text-foam-100">Цена работ</h2>
+        <p class="mt-4 text-sm leading-relaxed text-foam-300">
+          Определяется по договорённости после данных об объекте: тип и размер судна, степень
+          обрастания, порт и сроки. Опишите объект в заявке, вернёмся с расчётом стоимости
+          и срока в течение рабочего дня.
+        </p>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a
+            href="/#request"
+            class="rounded-full bg-signal-500 px-6 py-2.5 text-sm font-semibold text-abyss-950 transition-colors hover:bg-signal-400"
+          >
+            Оставить заявку
+          </a>
+          <a
+            href="/osmotr/"
+            class="rounded-full border border-white/20 px-6 py-2.5 text-sm font-semibold text-foam-100 transition-colors hover:border-signal-500/60"
+          >
+            Подводный осмотр
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+  <PolicyDialog />
+  <ScrollTop />
+</Base>
